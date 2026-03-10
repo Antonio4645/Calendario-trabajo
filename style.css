@@ -75,7 +75,7 @@ body {
     cursor: pointer;
     border-radius: 14px;
     min-height: 100px; /* un poco más alto */
-    font-size: 1.5em; /* números más grandes */
+    font-size: 2em; /* números más grandes */
     display: flex;
     flex-direction: column;
     justify-content: center;
