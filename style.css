@@ -3,7 +3,7 @@ body {
     font-family: 'Segoe UI', Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(to bottom, #017bb8, #012152); /* Azul más lineal y oscuro */
+    background: linear-gradient(to bottom, #017bb8, #012152); /* Azul lineal oscuro */
     color: #fff;
 }
 
@@ -22,6 +22,7 @@ body {
     height: auto; 
     margin-right: 15px; 
 }
+
 .header h1 { 
     font-size: 1.8em; 
     margin: 0; 
@@ -32,12 +33,12 @@ body {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 20px; /* más espacio entre botones */
+    gap: 20px; /* espacio entre botones */
     margin: 25px 0;
 }
 
 .nav button {
-    padding: 20px 28px;      /* más grande */
+    padding: 20px 28px;      /* tamaño de botón */
     font-size: 22px;         /* letra más grande */
     border-radius: 14px;
     border: none;
@@ -47,6 +48,7 @@ body {
     box-shadow: 0 3px 6px rgba(0,0,0,0.25);
     transition: transform 0.2s, background 0.3s;
 }
+
 .nav button:hover {
     transform: translateY(-2px);
     background: #03a9f4;
@@ -62,6 +64,7 @@ body {
     color:#fff; 
     font-size: 1.2em; /* más grande */
 }
+
 .semana div { padding:10px 0; }
 
 /* ------------------ Calendario ------------------ */
@@ -71,13 +74,14 @@ body {
     gap: 10px;
     padding: 10px;
 }
+
 .day {
     background: #ffffffcc;
-    padding: 24px 5px; /* más grande */
+    padding: 24px 5px;
     cursor: pointer;
     border-radius: 14px;
-    min-height: 90px; /* más alto */
-    font-size: 1.3em; /* números más grandes */
+    min-height: 90px;
+    font-size: 1.3em;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -85,7 +89,11 @@ body {
     box-shadow: 0 3px 6px rgba(0,0,0,0.15);
     transition: transform 0.2s, box-shadow 0.3s;
 }
-.day:hover { transform: translateY(-3px); box-shadow:0 5px 10px rgba(0,0,0,0.25); }
+
+.day:hover { 
+    transform: translateY(-3px); 
+    box-shadow: 0 5px 10px rgba(0,0,0,0.25); 
+}
 
 /* ------------------ Colores por tipo ------------------ */
 .normal { background: #FFD966; }           /* Amarillo - Día normal trabajado */
@@ -101,12 +109,12 @@ body {
     left: 50%;
     transform: translate(-50%, -50%);
     background: #ffffffee;           
-    padding: 40px;                   
+    padding: 35px;                   
     border-radius: 20px;
     box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-    width: 95%;                      
-    max-width: 480px;
-    font-size: 1.3em;                
+    width: 90%;                      
+    max-width: 450px;
+    font-size: 1.35em;                
 }
 
 #formulario label,
@@ -116,14 +124,14 @@ body {
     display: block;
     width: 100%;
     margin: 12px 0;                  
-    font-size: 1.2em;                
-    padding: 8px 10px;               
+    font-size: 1.25em;               
+    padding: 10px;                   
 }
 
 #formulario button {
     margin-top: 16px;
-    padding: 18px;
-    font-size: 1.25em;               
+    padding: 20px;
+    font-size: 1.35em;               
     width: 100%;
     border-radius: 14px;
     border: none;
@@ -162,21 +170,13 @@ body {
 
 /* ------------------ Responsive móvil ------------------ */
 @media(max-width:500px){
-    #formulario { 
-        width: 95%;
-        max-width: 100%;
-        padding: 40px;
-        font-size: 1.5em; /* aún más grande */
-    }
+    .day { font-size:1.5em; min-height:100px; padding:26px 5px; }
+    .nav button { font-size:20px; padding:18px 24px; }
+    .header h1 { font-size:1.6em; }
+    #formulario { width:95%; max-width:100%; padding:30px; font-size:1.3em; }
     #formulario label,
     #formulario select,
     #formulario input,
-    #formulario textarea {
-        font-size: 1.4em; /* más grande */
-        padding: 12px;
-    }
-    #formulario button {
-        font-size: 1.5em;
-        padding: 22px;
-    }
+    #formulario textarea { font-size:1.25em; padding:10px; }
+    #formulario button { font-size:1.3em; padding:20px; }
 }
