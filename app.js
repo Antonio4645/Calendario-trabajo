@@ -29,7 +29,7 @@ function generarCalendario(){
         let div = document.createElement("div");
         div.classList.add("day");
 
-        // 🔹 Fecha siempre con dos dígitos para evitar errores en móviles
+        // Fecha siempre con dos dígitos para evitar errores en móviles
         let fecha = `${año}-${String(mes+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
         div.dataset.fecha = fecha;
 
@@ -41,7 +41,7 @@ function generarCalendario(){
                     datos.tipo === "vacaciones" ? "V" :
                     datos.tipo === "festivo" ? "F" :
                     datos.tipo === "festivo-trabajado" ? "FT" : "";
-            if(datos.entrada && datos.salida){
+            if(datos.entrada && datos.salida && datos.horas){
                 letra += " (" + datos.horas.toFixed(2) + "h)";
             }
         }
@@ -128,20 +128,22 @@ function mesSiguiente(){ mes++; if(mes>11){ mes=0; año++; } generarCalendario()
 // ------------------ Resumen ------------------
 function calcularResumen(){
     let resumen = {};
-    for(let key in localStorage){
-        try{
-            let datos = JSON.parse(localStorage.getItem(key));
-            if(!datos) continue;
-            let [year, month] = key.split("-");
-            let keyMes = `${year}-${month}`;
-            if(!resumen[keyMes]) resumen[keyMes] = {horas:0, normales:0, festivosTrab:0, vacaciones:0};
+    // 🔹 Iteración segura: solo claves de fechas válidas YYYY-MM-DD
+    Object.keys(localStorage).forEach(key => {
+        if(!/^\d{4}-\d{2}-\d{2}$/.test(key)) return;
 
-            if(datos.horas) resumen[keyMes].horas += datos.horas;
-            if(datos.tipo==="normal") resumen[keyMes].normales +=1;
-            if(datos.tipo==="festivo-trabajado") resumen[keyMes].festivosTrab +=1;
-            if(datos.tipo==="vacaciones") resumen[keyMes].vacaciones +=1;
-        } catch(e){}
-    }
+        let datos = JSON.parse(localStorage.getItem(key));
+        if(!datos) return;
+
+        let [year, month] = key.split("-");
+        let keyMes = `${year}-${month}`;
+        if(!resumen[keyMes]) resumen[keyMes] = {horas:0, normales:0, festivosTrab:0, vacaciones:0};
+
+        if(datos.horas) resumen[keyMes].horas += datos.horas;
+        if(datos.tipo==="normal") resumen[keyMes].normales +=1;
+        if(datos.tipo==="festivo-trabajado") resumen[keyMes].festivosTrab +=1;
+        if(datos.tipo==="vacaciones") resumen[keyMes].vacaciones +=1;
+    });
     return resumen;
 }
 
