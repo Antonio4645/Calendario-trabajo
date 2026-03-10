@@ -194,7 +194,7 @@ body {
 ======================================== */
 @media(max-width:500px){
     .day { 
-        font-size:1.8em; 
+        font-size:1.45em; 
         min-height:90px; 
         padding:20px 5px; 
     }
