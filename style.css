@@ -4,7 +4,7 @@ body {
     margin: 0;
     padding: 0;
     background: linear-gradient(to bottom, #017bb8, #012152); /* Azul lineal más profesional */
-    color: #333;
+    color: #f8f7f7;
 }
 
 /* ------------------ Header ------------------ */
@@ -70,17 +70,17 @@ body {
 }
 
 .day {
-    background: #ffffffcc;
-    padding: 20px 5px;
+    background: #000000cc;
+    padding: 24px 5px;
     cursor: pointer;
-    border-radius: 12px;
-    min-height: 80px;
-    font-size: 1.2em;
+    border-radius: 14px;
+    min-height: 100px; /* un poco más alto */
+    font-size: 1.5em; /* números más grandes */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
+    box-shadow: 0 3px 6px rgba(248, 1, 1, 0.15);
     transition: transform 0.2s, box-shadow 0.3s;
 }
 
