@@ -1,29 +1,37 @@
-/* ------------------ CSS Profesional y Moderno ------------------ */
+/* ========================================
+   Estilos generales
+======================================== */
 body {
     font-family: 'Segoe UI', Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(to bottom, #017bb8, #012152); /* Azul lineal más profesional */
-    color: #f8f7f7;
+    background-color: #4d85c5; /* azul más profesional */
+    color: #333;
 }
 
-/* ------------------ Header ------------------ */
 .header {
     display: flex;
     align-items: center;
     padding: 20px;
-    background: #014d7a; /* Azul más intenso */
+    background: #02699c; /* azul oscuro */
     color: white;
     box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    position: sticky;
-    top: 0;
-    z-index: 10;
 }
 
-.logo { width: 70px; height: auto; margin-right: 15px; }
-.header h1 { font-size: 2em; margin: 0; }
+.logo { 
+    width: 70px; 
+    height: auto; 
+    margin-right: 15px; 
+}
 
-/* ------------------ Navegación de Mes ------------------ */
+.header h1 { 
+    font-size: 1.8em; 
+    margin: 0; 
+}
+
+/* ========================================
+   Navegación (mes anterior/siguiente)
+======================================== */
 .nav {
     display: flex;
     justify-content: center;
@@ -33,12 +41,12 @@ body {
 }
 
 .nav button {
-    padding: 14px 22px;
-    font-size: 18px;
+    padding: 14px 20px;
+    font-size: 20px;
     cursor: pointer;
     border-radius: 12px;
     border: none;
-    background: #004080;
+    background: #004080; /* fondo azul consistente */
     color: white;
     box-shadow: 0 2px 6px rgba(0,0,0,0.25);
     transition: transform 0.2s, background 0.3s;
@@ -49,7 +57,9 @@ body {
     transform: translateY(-2px);
 }
 
-/* ------------------ Semana ------------------ */
+/* ========================================
+   Días de la semana
+======================================== */
 .semana { 
     display: grid; 
     grid-template-columns: repeat(7, 1fr); 
@@ -57,30 +67,35 @@ body {
     margin: 0 10px; 
     text-align:center; 
     color:#f8f7f7; 
-    font-size: 1.3em; 
+    font-size: 1.2em;
 }
-.semana div { padding: 12px 0; }
 
-/* ------------------ Calendario ------------------ */
+.semana div { 
+    padding:10px 0; 
+}
+
+/* ========================================
+   Calendario
+======================================== */
 #calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
+    gap: 10px;
     padding: 10px;
 }
 
 .day {
-    background: #000000cc;
-    padding: 24px 5px;
+    background: #ffffffcc;
+    padding: 18px 5px;
     cursor: pointer;
     border-radius: 14px;
-    min-height: 100px; /* un poco más alto */
-    font-size: 2em; /* números más grandes */
+    min-height: 85px;
+    font-size: 1.35em;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    box-shadow: 0 3px 6px rgba(248, 1, 1, 0.15);
+    box-shadow: 0 3px 6px rgba(0,0,0,0.15);
     transition: transform 0.2s, box-shadow 0.3s;
 }
 
@@ -89,25 +104,27 @@ body {
     box-shadow: 0 5px 10px rgba(0,0,0,0.25);
 }
 
-/* ------------------ Colores de días ------------------ */
-.normal { background: #e9fa00; color:#000; }           /* Día trabajado normal */
-.vacaciones { background: #7CFC8A; color:#000; }      /* Vacaciones */
-.festivo { background: #4DA6FF; color:#fff; }         /* Festivo */
-.festivo-trabajado { background: #FF5C5C; color:#fff; } /* Festivo trabajado */
-.urbano { background: #A569BD; color:white; }         /* Trabajo urbano */
+/* Colores por tipo de día */
+.normal { background: #FFD966; }           /* día normal trabajado */
+.vacaciones { background: #7CFC8A; }      /* vacaciones */
+.festivo { background: #4DA6FF; }         /* festivo */
+.festivo-trabajado { background: #FF5C5C; } /* festivo trabajado */
+.urbano { background: #A569BD; color:white; } /* urbano */
 
-/* ------------------ Formulario ------------------ */
+/* ========================================
+   Formulario
+======================================== */
 #formulario {
     position: fixed;
     top: 50%; left:50%;
     transform: translate(-50%, -50%);
     background: #ffffffee;
-    padding: 40px;
+    padding: 30px;
     border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.3);
     width: 90%;
-    max-width: 500px;
-    font-size: 1.35em;
+    max-width: 450px;
+    font-size: 1.2em;
 }
 
 #formulario label,
@@ -116,32 +133,34 @@ body {
 #formulario textarea {
     display:block;
     width:100%;
-    margin:12px 0;
-    font-size:1.25em;
-    padding:10px;
-    border-radius: 8px;
-    border:1px solid #ccc;
+    margin:10px 0;
+    font-size:1.15em;
 }
 
 #formulario button {
-    margin-top:16px;
-    padding:20px;
-    font-size:1.3em;
+    margin-top:14px;
+    padding:16px;
+    font-size:1.2em;
     width:100%;
-    border-radius:14px;
+    border-radius:12px;
     border:none;
     cursor:pointer;
     background:#046ea3;
     color:white;
     box-shadow:0 3px 6px rgba(0,0,0,0.2);
-    transition: background 0.3s, transform 0.2s;
+    transition:background 0.3s, transform 0.2s;
 }
 
-#formulario button:hover { background:#03a9f4; transform:translateY(-2px); }
+#formulario button:hover {
+    background:#03a9f4;
+    transform:translateY(-2px);
+}
 
 .hidden { display:none; }
 
-/* ------------------ Resumen mensual ------------------ */
+/* ========================================
+   Resumen mensual
+======================================== */
 #resumen {
     margin: 20px;
     display:flex;
@@ -158,8 +177,8 @@ body {
 }
 
 .mes-card h3 {
-    margin-top:0;
-    margin-bottom:12px;
+    margin-top:0; 
+    margin-bottom:12px; 
     font-size:1.3em;
 }
 
@@ -170,21 +189,23 @@ body {
     font-size:1.1em;
 }
 
-/* ------------------ Móvil ------------------ */
+/* ========================================
+   Ajustes para móvil
+======================================== */
 @media(max-width:500px){
-    .day { font-size:3em; min-height:90px; padding:22px 5px; }
-    .nav button { font-size:16px; padding:12px 18px; }
-    .header h1 { font-size:1.6em; }
-    
-    #formulario {
-        width:95%;
-        font-size:1.4em;
-        padding:35px;
-        max-width:480px;
+    .day { 
+        font-size:1.45em; 
+        min-height:90px; 
+        padding:20px 5px; 
     }
-    #formulario label,
-    #formulario select,
-    #formulario input,
-    #formulario textarea { font-size:1.25em; }
-    #formulario button { font-size:1.35em; padding:18px; }
+    .nav button { 
+        font-size:18px; 
+        padding:14px 20px; 
+    }
+    .header h1 { font-size:1.6em; }
+    #formulario { 
+        width:95%; 
+        font-size:1.25em; 
+        padding:25px; 
+    }
 }
