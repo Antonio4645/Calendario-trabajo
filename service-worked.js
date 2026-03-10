@@ -1,5 +1,5 @@
 // Nombre del cache: cambia la versión cada vez que actualices CSS/JS
-const CACHE_NAME = "calendario-cache-v2"; // ++Sube a v3, v4, etc., cuando actualices archivos
+const CACHE_NAME = "calendario-cache-v3"; // ++Sube a v3, v4, etc., cuando actualices archivos
 
 // Archivos que queremos cachear para funcionar offline
 const urlsToCache = [
