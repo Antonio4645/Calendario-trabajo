@@ -97,21 +97,30 @@ body{
     margin-bottom: 20px;
 }
 
-/* Ajustes para móvil */
+/* ================= MÓVIL ================= */
 @media (max-width: 600px) {
-    /* Formulario más grande y cómodo */
+    /* Cabecera más grande */
+    .header h1 {
+        font-size: 26px;
+    }
+
+    .logo {
+        width: 100px;
+    }
+
+    /* Formulario grande y cómodo */
     #formulario {
-        width: 90%;
-        padding: 30px;
+        width: 95%;
+        padding: 40px;
     }
 
     #formulario label,
     #formulario select,
     #formulario input,
     #formulario button {
-        font-size: 18px;
-        padding: 12px;
-        margin: 8px 0;
+        font-size: 20px;   /* texto grande */
+        padding: 16px;     /* botones grandes y fáciles de tocar */
+        margin: 10px 0;    /* separación cómoda */
     }
 
     #horas label,
@@ -124,19 +133,22 @@ body{
         width: 100%;
     }
 
-    /* Logo y título más grandes */
-    .header h1 {
-        font-size: 24px;
-    }
-
-    .logo {
-        width: 100px;
-    }
-
-    /* Días del calendario más grandes */
+    /* Días del calendario grandes y cómodos */
     .day {
-        padding: 30px;       /* aumenta área táctil */
-        font-size: 18px;     /* números más grandes */
-        border-radius: 12px; /* bordes más redondeados */
+        padding: 40px;    /* área táctil grande */
+        font-size: 20px;  /* números legibles */
+        border-radius: 14px;
+    }
+
+    /* Navegación de meses más grande */
+    .nav button{
+        padding: 15px 20px;
+        font-size: 20px;
+    }
+
+    /* Semana de días de cabecera más grande */
+    .semana div{
+        font-size: 18px;
+        padding: 10px 0;
     }
 }
