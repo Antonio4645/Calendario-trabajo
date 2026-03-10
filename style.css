@@ -3,7 +3,7 @@ body {
     font-family: 'Segoe UI', Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(to bottom, #017bb8, #012152); /* Azul lineal más profesional */
+    background: linear-gradient(to bottom, #017bb8, #012152); /* Azul lineal */
     color: #f8f7f7;
 }
 
@@ -23,7 +23,7 @@ body {
 .logo { width: 70px; height: auto; margin-right: 15px; }
 .header h1 { font-size: 2em; margin: 0; }
 
-/* ------------------ Navegación de Mes ------------------ */
+/* ------------------ Navegación ------------------ */
 .nav {
     display: flex;
     justify-content: center;
@@ -70,18 +70,19 @@ body {
 }
 
 .day {
-    background: #000000cc;
-    padding: 24px 5px;
+    background: #000000cc; /* Fondo negro por defecto */
     cursor: pointer;
     border-radius: 14px;
-    min-height: 100px; /* un poco más alto */
-    font-size: 2em; /* números más grandes */
+    min-height: 100px;
+    font-size: 2em; 
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    text-align: center;
     box-shadow: 0 3px 6px rgba(248, 1, 1, 0.15);
-    transition: transform 0.2s, box-shadow 0.3s;
+    transition: transform 0.2s, box-shadow 0.3s, background 0.3s;
+    padding: 0;
 }
 
 .day:hover {
@@ -89,55 +90,60 @@ body {
     box-shadow: 0 5px 10px rgba(0,0,0,0.25);
 }
 
-/* ------------------ Colores de días ------------------ */
-.normal { background: #e9fa00; color:#000; }           /* Día trabajado normal */
-.vacaciones { background: #7CFC8A; color:#000; }      /* Vacaciones */
-.festivo { background: #4DA6FF; color:#fff; }         /* Festivo */
+/* ------------------ Colores por tipo de día ------------------ */
+.normal { background: #FFD966; color:#000; }             /* Trabajo normal */
+.vacaciones { background: #7CFC8A; color:#000; }        /* Vacaciones */
+.festivo { background: #4DA6FF; color:#fff; }           /* Festivo */
 .festivo-trabajado { background: #FF5C5C; color:#fff; } /* Festivo trabajado */
-.urbano { background: #A569BD; color:white; }         /* Trabajo urbano */
+.urbano { background: #A569BD; color:white; }           /* Trabajo urbano */
 
 /* ------------------ Formulario ------------------ */
 #formulario {
     position: fixed;
-    top: 50%; left:50%;
+    top: 50%;
+    left:50%;
     transform: translate(-50%, -50%);
-    background: #ffffffee;
-    padding: 40px;
+    background: #ffffffee; /* fondo semitransparente */
+    padding: 35px;
     border-radius: 20px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.3);
     width: 90%;
     max-width: 500px;
-    font-size: 1.35em;
+    font-size: 1.3em;
 }
 
 #formulario label,
-#formulario select,
 #formulario input,
+#formulario select,
 #formulario textarea {
     display:block;
     width:100%;
-    margin:12px 0;
-    font-size:1.25em;
-    padding:10px;
-    border-radius: 8px;
+    margin:10px 0;
+    font-size:1.2em;
+    padding:8px;
+    border-radius:6px;
     border:1px solid #ccc;
+    color: #000; /* texto visible sobre fondo claro */
 }
 
 #formulario button {
-    margin-top:16px;
-    padding:20px;
-    font-size:1.3em;
+    margin-top:14px;
+    padding:16px;
+    font-size:1.25em;
     width:100%;
-    border-radius:14px;
+    border-radius:12px;
     border:none;
     cursor:pointer;
     background:#046ea3;
     color:white;
     box-shadow:0 3px 6px rgba(0,0,0,0.2);
-    transition: background 0.3s, transform 0.2s;
+    transition:background 0.3s, transform 0.2s;
 }
 
-#formulario button:hover { background:#03a9f4; transform:translateY(-2px); }
+#formulario button:hover {
+    background:#03a9f4;
+    transform:translateY(-2px);
+}
 
 .hidden { display:none; }
 
@@ -150,7 +156,7 @@ body {
 }
 
 .mes-card {
-    background: #ffffffcc;
+    background: #0e0d0dcc;
     padding: 20px;
     border-radius: 14px;
     box-shadow: 0 4px 12px rgba(0,0,0,0.15);
@@ -160,31 +166,31 @@ body {
 .mes-card h3 {
     margin-top:0;
     margin-bottom:12px;
-    font-size:1.3em;
+    font-size:1.7em;
 }
 
 .mes-card .dato {
     display:flex;
     justify-content:space-between;
     padding:5px 0;
-    font-size:1.1em;
+    font-size:1.7em;
 }
 
 /* ------------------ Móvil ------------------ */
 @media(max-width:500px){
-    .day { font-size:3em; min-height:90px; padding:22px 5px; }
+    .day { font-size:2em; min-height:90px; padding:0; }
     .nav button { font-size:16px; padding:12px 18px; }
     .header h1 { font-size:1.6em; }
-    
+
     #formulario {
         width:95%;
-        font-size:1.4em;
-        padding:35px;
+        font-size:1.5em;
+        padding:30px;
         max-width:480px;
     }
     #formulario label,
-    #formulario select,
     #formulario input,
-    #formulario textarea { font-size:1.25em; }
-    #formulario button { font-size:1.35em; padding:18px; }
+    #formulario select,
+    #formulario textarea { font-size:1.2em; }
+    #formulario button { font-size:1.2em; padding:14px; }
 }
