@@ -122,11 +122,14 @@ body {
     display:block;
     width:100%;
     margin:10px 0;
-    font-size:1.2em;
+    font-size:1.4em;
     padding:8px;
     border-radius:6px;
     border:1px solid #ccc;
     color: #f3f2f2; /* texto visible sobre fondo claro */
+}
+#notas{
+    background-color: #000;
 }
 
 #formulario button {
