@@ -162,10 +162,21 @@ body {
 
 /* ------------------ Responsive móvil ------------------ */
 @media(max-width:500px){
-    .day { font-size:1.5em; min-height:100px; padding:26px 5px; }
-    .nav button { font-size:20px; padding:18px 24px; }
-    .header h1 { font-size:1.6em; }
-    #formulario { width:95%; font-size:1.35em; padding:35px; }
-    #formulario label, #formulario select, #formulario input, #formulario textarea { font-size:1.25em; padding:10px; }
-    #formulario button { font-size:1.3em; padding:20px; }
+    #formulario { 
+        width: 95%;
+        max-width: 100%;
+        padding: 40px;
+        font-size: 1.5em; /* aún más grande */
+    }
+    #formulario label,
+    #formulario select,
+    #formulario input,
+    #formulario textarea {
+        font-size: 1.4em; /* más grande */
+        padding: 12px;
+    }
+    #formulario button {
+        font-size: 1.5em;
+        padding: 22px;
+    }
 }
