@@ -20,14 +20,17 @@ function generarCalendario(){
 
     let diasMes = new Date(año, mes+1,0).getDate();
     let primerDia = new Date(año, mes, 1).getDay();
-    if(primerDia === 0) primerDia = 7;
+    if(primerDia === 0) primerDia = 7; // domingo como 7
 
+    // espacios vacíos antes del primer día
     for(let i=1; i<primerDia; i++) calendar.appendChild(document.createElement("div"));
 
     for(let i=1; i<=diasMes; i++){
         let div = document.createElement("div");
         div.classList.add("day");
-        let fecha = `${año}-${mes+1}-${i}`;
+
+        // 🔹 Fecha siempre con dos dígitos para evitar errores en móviles
+        let fecha = `${año}-${String(mes+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
         div.dataset.fecha = fecha;
 
         let datos = JSON.parse(localStorage.getItem(fecha));
@@ -55,8 +58,10 @@ function generarCalendario(){
 function abrirFormulario(fecha){
     fechaActual = fecha;
     formulario.classList.remove("hidden");
+
     let partes = fecha.split("-");
-    fechaSeleccionada.innerText = `${partes[2].padStart(2,'0')}/${partes[1].padStart(2,'0')}/${partes[0]}`;
+    fechaSeleccionada.innerText = `${partes[2]}/${partes[1]}/${partes[0]}`;
+
     let datos = JSON.parse(localStorage.getItem(fecha));
     tipoSelect.value = datos ? datos.tipo : "normal";
 }
