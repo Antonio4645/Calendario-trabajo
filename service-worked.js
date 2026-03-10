@@ -1,55 +1,37 @@
-// Nombre del cache: cambia la versión cada vez que actualices CSS/JS
-const CACHE_NAME = "calendario-cache-v4"; // ++Sube a v3, v4, etc., cuando actualices archivos
-
-// Archivos que queremos cachear para funcionar offline
+const CACHE_NAME = "fichaje-cache-v1";
 const urlsToCache = [
   "./",
   "./index.html",
   "./style.css",
   "./app.js",
   "./logo.png",
-  "./logo-icon.png"
+  "./logo-icon.png",
+  "./manifest.json"
 ];
 
-// Instalación del Service Worker
-self.addEventListener("install", (event) => {
-  console.log("[Service Worker] Instalando y cacheando archivos...");
+self.addEventListener("install", event => {
   event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then((cache) => {
-        return cache.addAll(urlsToCache);
-      })
+    caches.open(CACHE_NAME).then(cache => cache.addAll(urlsToCache))
   );
+  self.skipWaiting();
 });
 
-// Activación del Service Worker
-self.addEventListener("activate", (event) => {
-  console.log("[Service Worker] Activado");
-  // Limpiar caches antiguos
+self.addEventListener("activate", event => {
   event.waitUntil(
-    caches.keys().then((keys) => {
-      return Promise.all(
-        keys.map((key) => {
-          if (key !== CACHE_NAME) {
-            console.log("[Service Worker] Eliminando cache antiguo:", key);
-            return caches.delete(key);
-          }
-        })
-      );
-    })
+    caches.keys().then(keys =>
+      Promise.all(keys.map(key => { if(key!==CACHE_NAME) return caches.delete(key); }))
+    )
   );
+  self.clients.claim();
 });
 
-// Interceptar peticiones y servir desde cache si existe
-self.addEventListener("fetch", (event) => {
+self.addEventListener("fetch", event => {
   event.respondWith(
-    caches.match(event.request).then((response) => {
-      if (response) {
-        // Devuelve archivo cacheado
-        return response;
+    caches.match(event.request).then(resp => resp || fetch(event.request).then(response => {
+      if(event.request.url.endsWith(".js") || event.request.url.endsWith(".css") || event.request.url.endsWith(".html")){
+        caches.open(CACHE_NAME).then(cache => { cache.put(event.request, response.clone()); });
       }
-      // Sino, busca online
-      return fetch(event.request);
-    })
+      return response;
+    }))
   );
 });

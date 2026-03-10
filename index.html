@@ -2,64 +2,54 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Control de Trabajo</title>
+<title>Fichaje Profesional</title>
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#4CAF50">
 </head>
 <body>
 
-<!-- logo arriba -->
 <div class="header">
     <img src="logo.png" alt="Logo" class="logo">
-    <h1>Mi Calendario de Trabajo</h1>
+    <h1>Fichaje Profesional</h1>
 </div>
 
-<div class="nav">
-<button onclick="mesAnterior()">⬅</button>
-<h2 id="mesActual"></h2>
-<button onclick="mesSiguiente()">➡</button>
-</div>
+<div id="contenedor-principal">
+    <div id="calendar-container">
+        <div class="nav">
+            <button onclick="mesAnterior()">⬅</button>
+            <h2 id="mesActual"></h2>
+            <button onclick="mesSiguiente()">➡</button>
+        </div>
 
-<div class="semana">
-<div>L</div>
-<div>M</div>
-<div>X</div>
-<div>J</div>
-<div>V</div>
-<div>S</div>
-<div>D</div>
-</div>
+        <div class="semana">
+            <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div>
+        </div>
 
-<div id="calendar"></div>
+        <div id="calendar"></div>
+    </div>
+
+    <div id="resumen"></div>
+</div>
 
 <div id="formulario" class="hidden">
+    <h2 id="fechaSeleccionada"></h2>
+    <button onclick="ficharEntrada()">Fichar Entrada</button>
+    <button onclick="ficharSalida()">Fichar Salida</button>
 
-<h2 id="fechaSeleccionada"></h2>
+    <label>Tipo de día:</label>
+    <select id="tipo">
+        <option value="normal">Normal</option>
+        <option value="vacaciones">Vacaciones</option>
+        <option value="festivo">Festivo</option>
+        <option value="festivo-trabajado">Festivo Trabajado</option>
+    </select>
 
-<label>Tipo:</label>
-<select id="tipo">
-<option value="trabajo">Trabajo</option>
-<option value="vacaciones">Vacaciones</option>
-</select>
-
-<div id="horas">
-
-<label>Entrada:</label>
-<input type="time" id="entrada">
-
-<label>Salida:</label>
-<input type="time" id="salida">
-
-</div>
-
-<button onclick="guardar()">Guardar</button>
-<button onclick="cerrar()">Cancelar</button>
-<button onclick="eliminar()">Eliminar</button>
-
+    <button onclick="guardarTipo()">Guardar tipo de día</button>
+    <button onclick="cerrar()">Cerrar</button>
+    <button onclick="eliminarDia()">Eliminar día</button>
 </div>
 
 <script src="app.js"></script>
-
 </body>
 </html>

@@ -1,5 +1,4 @@
-/* Estilo general */
-body{
+body {
     font-family: Arial, sans-serif;
     text-align:center;
     background:#f4f4f4;
@@ -7,54 +6,64 @@ body{
     padding:0;
 }
 
-/* Calendario */
-#calendar{
+#contenedor-principal {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+}
+
+#calendar-container {
+    flex: 1 1 400px;
+    min-width: 300px;
+}
+
+#calendar {
     display:grid;
     grid-template-columns:repeat(7,1fr);
     gap:10px;
     padding:20px;
 }
 
-.day{
+.day {
     background:white;
     padding:20px;
     cursor:pointer;
     border-radius:8px;
-    transition: transform 0.1s;
+    font-weight:bold;
+    font-size:16px;
+    white-space: pre-line;
 }
 
-.day:hover {
-    transform: scale(1.05);
-}
+.day.normal { background:#FFD966; }
+.day.vacaciones { background:#7CFC8A; }
+.day.festivo { background:#87CEFA; }
+.day.festivo-trabajado { background:#FF7F7F; }
 
-.trabajo{
-    background:#7CFC8A;
-}
-
-.vacaciones{
-    background:#FFD966;
-}
-
-/* Formulario */
-#formulario{
+#formulario {
     position:fixed;
     top:50%;
     left:50%;
     transform:translate(-50%,-50%);
     background:white;
-    padding:20px;
+    padding:30px;
     border-radius:10px;
     box-shadow:0 0 10px rgba(0,0,0,0.3);
     max-width:400px;
-    width:80%;
+    width:90%;
     box-sizing:border-box;
+    z-index: 1000;
 }
 
-.hidden{
-    display:none;
+.hidden { display:none; }
+
+#formulario button, #formulario select {
+    width:100%;
+    padding:15px;
+    font-size:18px;
+    margin:10px 0;
 }
 
-/* Navegación de meses */
 .nav{
     display:flex;
     justify-content:center;
@@ -69,7 +78,6 @@ body{
     cursor:pointer;
 }
 
-/* Encabezado de días de la semana */
 .semana{
     display:grid;
     grid-template-columns:repeat(7,1fr);
@@ -77,16 +85,12 @@ body{
     margin:10px 20px;
 }
 
-.semana div{
-    padding:5px;
-}
+.semana div{ padding:5px; }
 
-/* Logo y cabecera */
 .logo {
     width: 80px;
     height: auto;
     margin-right: 10px;
-    vertical-align: middle;
 }
 
 .header {
@@ -97,58 +101,47 @@ body{
     margin-bottom: 20px;
 }
 
-/* ================= MÓVIL ================= */
-@media (max-width: 600px) {
-    /* Cabecera más grande */
-    .header h1 {
-        font-size: 26px;
-    }
+#resumen {
+    flex: 0 0 250px;
+    max-width: 300px;
+}
 
-    .logo {
-        width: 100px;
-    }
+.mes-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+    padding: 15px;
+    width: 200px;
+    box-sizing: border-box;
+    text-align: left;
+    font-size: 16px;
+}
 
-    /* Formulario grande y cómodo */
-    #formulario {
-        width: 95%;
-        padding: 40px;
-    }
+.mes-card h3 {
+    margin-top: 0;
+    text-align: center;
+    font-size: 18px;
+}
 
-    #formulario label,
-    #formulario select,
-    #formulario input,
-    #formulario button {
-        font-size: 20px;   /* texto grande */
-        padding: 16px;     /* botones grandes y fáciles de tocar */
-        margin: 10px 0;    /* separación cómoda */
-    }
+.dato {
+    display: flex;
+    justify-content: space-between;
+    margin: 5px 0;
+    padding: 5px;
+    border-radius: 5px;
+}
 
-    #horas label,
-    #horas input {
-        display: block;
-        width: 100%;
-    }
+.dato.horas { background:#f0f0f0; }
+.dato.normales { background:#FFD966; }
+.dato.festivos { background:#FF7F7F; }
+.dato.vacaciones { background:#7CFC8A; }
 
-    #formulario button {
-        width: 100%;
-    }
-
-    /* Días del calendario grandes y cómodos */
-    .day {
-        padding: 40px;    /* área táctil grande */
-        font-size: 20px;  /* números legibles */
-        border-radius: 14px;
-    }
-
-    /* Navegación de meses más grande */
-    .nav button{
-        padding: 15px 20px;
-        font-size: 20px;
-    }
-
-    /* Semana de días de cabecera más grande */
-    .semana div{
-        font-size: 18px;
-        padding: 10px 0;
-    }
+@media(max-width: 600px){
+    #contenedor-principal { flex-direction: column; }
+    #resumen { max-width: 100%; }
+    .mes-card { width: 90%; font-size: 18px; padding:20px; }
+    .day { font-size:20px; padding:40px; }
+    #formulario { padding:40px; }
+    #formulario button, #formulario select { font-size:20px; padding:16px; }
+    .nav button { font-size:20px; padding:15px 20px; }
 }
