@@ -172,7 +172,7 @@ body {
 
 /* ------------------ Móvil ------------------ */
 @media(max-width:500px){
-    .day { font-size:1.9em; min-height:90px; padding:22px 5px; }
+    .day { font-size:3em; min-height:90px; padding:22px 5px; }
     .nav button { font-size:16px; padding:12px 18px; }
     .header h1 { font-size:1.6em; }
     
