@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<title>Fichaje Profesional</title>
+<title>Mi Calendario de Trabajo</title>
 <link rel="stylesheet" href="style.css">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#4CAF50">
@@ -11,44 +11,46 @@
 
 <div class="header">
     <img src="logo.png" alt="Logo" class="logo">
-    <h1>Fichaje Profesional</h1>
+    <h1>Mi Calendario de Trabajo</h1>
 </div>
 
-<div id="contenedor-principal">
-    <div id="calendar-container">
-        <div class="nav">
-            <button onclick="mesAnterior()">⬅</button>
-            <h2 id="mesActual"></h2>
-            <button onclick="mesSiguiente()">➡</button>
-        </div>
-
-        <div class="semana">
-            <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div>
-        </div>
-
-        <div id="calendar"></div>
-    </div>
-
-    <div id="resumen"></div>
+<div class="nav">
+    <button onclick="mesAnterior()">⬅</button>
+    <h2 id="mesActual"></h2>
+    <button onclick="mesSiguiente()">➡</button>
 </div>
 
+<div class="semana">
+    <div>L</div><div>M</div><div>X</div><div>J</div><div>V</div><div>S</div><div>D</div>
+</div>
+
+<div id="calendar"></div>
+
+<!-- Formulario -->
 <div id="formulario" class="hidden">
     <h2 id="fechaSeleccionada"></h2>
-    <button onclick="ficharEntrada()">Fichar Entrada</button>
-    <button onclick="ficharSalida()">Fichar Salida</button>
 
     <label>Tipo de día:</label>
     <select id="tipo">
-        <option value="normal">Normal</option>
+        <option value="normal">Trabajo normal</option>
         <option value="vacaciones">Vacaciones</option>
         <option value="festivo">Festivo</option>
-        <option value="festivo-trabajado">Festivo Trabajado</option>
+        <option value="festivo-trabajado">Festivo trabajado</option>
+        <option value="urbano">Trabajo urbano</option>
     </select>
 
-    <button onclick="guardarTipo()">Guardar tipo de día</button>
-    <button onclick="cerrar()">Cerrar</button>
-    <button onclick="eliminarDia()">Eliminar día</button>
+    <label>Notas:</label>
+    <textarea id="notas" rows="3" placeholder="Escribe aquí tus notas..."></textarea>
+
+    <button onclick="ficharEntrada()">Fichar Entrada</button>
+    <button onclick="ficharSalida()">Fichar Salida</button>
+    <button onclick="guardarTipo()">Guardar Tipo/Nota</button>
+    <button onclick="eliminarDia()">Eliminar Día</button>
+    <button onclick="cerrar()">Cancelar</button>
 </div>
+
+<!-- Resumen -->
+<div id="resumen"></div>
 
 <script src="app.js"></script>
 </body>
