@@ -14,7 +14,7 @@ let fechaActual = "";
 
 const nombresMes = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 
-// ------------------ Calendario Actualizado ------------------
+// ------------------ Calendario ------------------
 function generarCalendario(){
     calendar.innerHTML="";
     mesActualTexto.innerText = nombresMes[mes]+" "+año;
@@ -23,27 +23,25 @@ function generarCalendario(){
     let primerDia = new Date(año, mes, 1).getDay();
     if(primerDia===0) primerDia=7;
 
-    // Obtener la fecha de hoy real del sistema para compararla
     let objetoHoy = new Date();
     let fechaHoyReal = `${objetoHoy.getFullYear()}-${String(objetoHoy.getMonth()+1).padStart(2,'0')}-${String(objetoHoy.getDate()).padStart(2,'0')}`;
 
-    for(let i=1;i<primerDia;i++) calendar.appendChild(document.createElement("div"));
+    for(let i=1; i<primerDia; i++) calendar.appendChild(document.createElement("div"));
 
-    for(let i=1;i<=diasMes;i++){
+    for(let i=1; i<=diasMes; i++){
         let div=document.createElement("div");
         div.classList.add("day");
 
         let fecha=`${año}-${String(mes+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
         div.dataset.fecha = fecha;
 
-        // MARCA DE HOY: Si la casilla coincide con el día de hoy real, le añadimos una clase CSS
         if(fecha === fechaHoyReal) {
             div.classList.add("hoy-actual");
         }
 
         let datos = JSON.parse(localStorage.getItem(fecha));
-
         let letra="";
+
         if(datos){
             div.classList.add(datos.tipo);
             letra = datos.tipo==="normal"?"T":
@@ -53,16 +51,14 @@ function generarCalendario(){
                     datos.tipo==="urbano"?"TU":"";
             if(datos.horas) letra+=" ("+datos.horas+")";
 
-            // INDICADOR DE NOTA: Si el día tiene una nota escrita y no está vacía, añadimos un puntito visual
             if(datos.nota && datos.nota.trim() !== "") {
                 let dot = document.createElement("span");
                 dot.classList.add("indicador-nota");
-                dot.innerHTML = "✏️"; // Un mini lápiz elegante en la esquina
+                dot.innerHTML = "✏️";
                 div.appendChild(dot);
             }
         }
 
-        // Para no borrar el lápiz si existía, creamos un contenedor para el texto del día
         let textoDia = document.createElement("span");
         textoDia.innerText = i + "\n" + letra;
         div.appendChild(textoDia);
@@ -93,10 +89,10 @@ function abrirFormulario(fecha){
                 let [hS,mS] = t.salida.split(":").map(Number);
                 
                 let minutos = (hS*60+mS)-(hE*60+mE);
-                if(minutos < 0) minutos += 1440; // FIX TURNO NOCTURNO (Cruzar medianoche)
+                if(minutos < 0) minutos += 1440; 
 
                 let horas = Math.floor(minutos/60);
-                let mins = minutos % 60;
+                let mins = minutes = minutos % 60;
                 listaTurnos.innerHTML += `T${i+1}: ${t.entrada} - ${t.salida} (${horas}h ${mins}m)<br>`;
             } else if(t.entrada && !t.salida){
                 listaTurnos.innerHTML += `T${i+1}: ${t.entrada} - ...<br>`;
@@ -111,7 +107,7 @@ function cerrar(){
     formulario.classList.add("hidden");
 }
 
-// ------------------ Fichar Entrada ------------------
+// ------------------ Acciones de Fichaje (Disparadores de Backup Directo) ------------------
 function ficharEntrada(){
     let datos=JSON.parse(localStorage.getItem(fechaActual))||{};
     if(!datos.turnos) datos.turnos=[];
@@ -127,14 +123,15 @@ function ficharEntrada(){
     datos.turnos.push({entrada:hora});
     datos.tipo = datos.tipo||"normal";
     datos.nota = notasInput.value||"";
+    
+    // Al guardar un cambio real, consolidamos el estado actual
+    guardarCopiaAutomatica(); 
     localStorage.setItem(fechaActual,JSON.stringify(datos));
     
-    guardarCopiaAutomatica(); // 🌟 Autoguardado invisible activado
     generarCalendario();
-    abrirFormulario(fechaActual); // Recarga la lista en pantalla de manera fluida sin cerrar
+    abrirFormulario(fechaActual);
 }
 
-// ------------------ Fichar Salida ------------------
 function ficharSalida(){
     let datos=JSON.parse(localStorage.getItem(fechaActual))||{};
     if(!datos.turnos || datos.turnos.length===0){
@@ -159,45 +156,38 @@ function ficharSalida(){
             let [hS,mS] = turno.salida.split(":").map(Number);
             
             let dif = (hS*60+mS)-(hE*60+mE);
-            if(dif < 0) dif += 1440; // FIX TURNO NOCTURNO (Cruzar medianoche)
+            if(dif < 0) dif += 1440; 
             totalMinutos += dif;
         }
     });
     let horas = Math.floor(totalMinutos/60);
     let minutos = totalMinutos % 60;
     datos.horas = `${horas}h ${minutos}m`;
-
     datos.nota = notasInput.value||"";
+
+    guardarCopiaAutomatica(); 
     localStorage.setItem(fechaActual,JSON.stringify(datos));
     
-    guardarCopiaAutomatica(); // 🌟 Autoguardado invisible activado
     generarCalendario();
     cerrar(); 
 }
 
-// ------------------ Guardar tipo ------------------
 function guardarTipo(){
     let datos=JSON.parse(localStorage.getItem(fechaActual))||{};
     datos.tipo = tipoSelect.value;
     datos.nota = notasInput.value||"";
+
+    guardarCopiaAutomatica(); 
     localStorage.setItem(fechaActual,JSON.stringify(datos));
     
-    guardarCopiaAutomatica(); // 🌟 Autoguardado invisible activado
     generarCalendario();
     cerrar();
 }
 
-// ------------------ Autocompletado de Jornada Urbana ------------------
 function aplicarUrbanoAutomatico() {
     if (!fechaActual) return;
 
-    // 1. Definimos el turno fijo de urbano (07:15 a 15:15)
-    let turnoUrbano = {
-        entrada: "07:15",
-        salida: "15:15"
-    };
-
-    // 2. Estructuramos los datos del día directamente
+    let turnoUrbano = { entrada: "07:15", salida: "15:15" };
     const datosDia = {
         tipo: "urbano", 
         nota: notasInput.value || "", 
@@ -205,24 +195,25 @@ function aplicarUrbanoAutomatico() {
         horas: "8h 00m" 
     };
 
-    // 3. Guardamos en el almacenamiento local, hacemos backup, refrescamos y cerramos
+    guardarCopiaAutomatica(); 
     localStorage.setItem(fechaActual, JSON.stringify(datosDia));
     
-    guardarCopiaAutomatica(); // 🌟 Autoguardado invisible activado
     generarCalendario();
     cerrar();
 }
 
-
-// ------------------ Eliminar día ------------------
+// ------------------ Eliminar Día (Lógica Inteligente anti-fantasmas) ------------------
 function eliminarDia(){
-    localStorage.removeItem(fechaActual);
-    // ❌ Quitamos la línea de guardarCopiaAutomatica() para que la caja fuerte NO sepa que lo has borrado
+    if(localStorage.getItem(fechaActual)) {
+        // Hacemos una copia JUSTO ANTES de borrar. Esto captura el día vivo en el autoguardado.
+        guardarCopiaAutomatica(); 
+        localStorage.removeItem(fechaActual);
+    }
     generarCalendario();
     cerrar();
 }
 
-// ------------------ Navigation ------------------
+// ------------------ Navegación ------------------
 function mesAnterior(){
     mes--;
     if(mes<0){ mes=11; año--; }
@@ -234,7 +225,7 @@ function mesSiguiente(){
     generarCalendario();
 }
 
-// ------------------ Resumen ------------------
+// ------------------ Resumenes ------------------
 function calcularResumen(){
     let resumen={};
     Object.keys(localStorage).forEach(key=>{
@@ -277,18 +268,16 @@ function mostrarResumen(){
     
     resumenDiv.innerHTML = html;
 
-    // ARREGLO MÓVIL: Evitamos que se dupliquen los botones en pantalla al refrescar
     let botonExistente = document.getElementById("btnExportarExcel");
     if (botonExistente) botonExistente.remove();
 
-    // Si hay datos guardados, montamos la estructura integrada con los botones de Copia Avanzada
     if(html !== "") {
         let contenedorBoton = document.createElement("div");
         contenedorBoton.id = "btnExportarExcel";
         contenedorBoton.style.cssText = "text-align: center; margin: 30px auto; width: 90%; max-width: 400px; display: flex; flex-direction: column; gap: 12px; clear: both;";
         
         contenedorBoton.innerHTML = `
-            <button onclick="exportarAExcel()" style="width: 100%; background: #16a34a; color: white; border: none; padding: 15px; font-size: 1.05em; font-weight: bold; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: background 0.2s; -webkit-appearance: none;">
+            <button onclick="exportarAExcel()" style="width: 100%; background: #16a34a; color: white; border: none; padding: 15px; font-size: 1.05em; font-weight: bold; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); -webkit-appearance: none;">
                 📥 Exportar Historial a Excel
             </button>
             
@@ -307,13 +296,9 @@ function mostrarResumen(){
     }
 }
 
-// Genera y descarga el archivo Excel (CSV) compatible
 function exportarAExcel() {
     let contenidoCSV = "Fecha;Tipo de Dia;Horas Totales;Turnos Fichados;Notas\n";
-    
-    let fechas = Object.keys(localStorage)
-        .filter(key => /^\d{4}-\d{2}-\d{2}$/.test(key))
-        .sort();
+    let fechas = Object.keys(localStorage).filter(key => /^\d{4}-\d{2}-\d{2}$/.test(key)).sort();
 
     if (fechas.length === 0) {
         alert("No tienes ningún dato registrado para exportar todavía.");
@@ -328,32 +313,25 @@ function exportarAExcel() {
         let horas = datos.horas || "0h 0m";
         let nota = datos.nota ? datos.nota.replace(/[\n\r;]/g, " ") : "";
 
-        let turnosTexto = "";
-        if (datos.turnos && datos.turnos.length) {
-            turnosTexto = datos.turnos.map(t => `${t.entrada || "..."}-${t.salida || "..."}`).join(" | ");
-        } else {
-            turnosTexto = "Sin turnos";
-        }
+        let turnosTexto = datos.turnos && datos.turnos.length ? 
+            datos.turnos.map(t => `${t.entrada || "..."}-${t.salida || "..."}`).join(" | ") : "Sin turnos";
 
         contenidoCSV += `${fecha};${tipo.toUpperCase()};${horas};${turnosTexto};${nota}\n`;
     });
 
     let blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), contenidoCSV], { type: "text/csv;charset=utf-8;" });
     let link = document.createElement("a");
-    
-    let url = URL.createObjectURL(blob);
-    link.setAttribute("href", url);
+    link.setAttribute("href", URL.createObjectURL(blob));
     link.setAttribute("download", `Historial_Fichajes_${new Date().getFullYear()}.csv`);
     link.style.visibility = 'hidden';
-    
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
 }
 
-// ------------------ SISTEMA DE COPIA DE SEGURIDAD AUTOMÁTICA E INVISIBLE ------------------
+// ================= LÓGICA DE PROTECCIÓN ABSOLUTA (BACKUP) =================
 
-// 1. Almacena en silencio un duplicado exacto de las horas en otra sección del disco duro local
+// 1. Guarda de forma fidedigna el estado del calendario antes de cualquier alteración
 function guardarCopiaAutomatica() {
     let datosApp = {};
     for (let i = 0; i < localStorage.length; i++) {
@@ -362,59 +340,61 @@ function guardarCopiaAutomatica() {
             datosApp[clave] = localStorage.getItem(clave);
         }
     }
-    
+    // Salvaguardamos únicamente si existen registros reales en la sesión activa
     if (Object.keys(datosApp).length > 0) {
         localStorage.setItem('backup_automatico_interno', JSON.stringify(datosApp));
-        console.log("🔒 Copia de seguridad automática actualizada en segundo plano.");
     }
 }
 
-// 2. Extrae las horas duplicadas de la zona oculta en caso de emergencia
+// 2. Botón de Deshacer: Restaura la última versión guardada
 function restaurarCopiaAutomatica() {
     const backup = localStorage.getItem('backup_automatico_interno');
-    
     if (!backup) {
-        alert("Aún no hay ninguna copia automática grabada en la memoria.");
+        alert("Aún no se ha consolidado ninguna copia automática en el sistema.");
         return;
     }
 
-    if (confirm("⚠️ ¿Quieres restaurar tu último autoguardado de seguridad? Recuperará todo tu registro al instante.")) {
+    if (confirm("⚠️ ¿Deseas deshacer los últimos cambios y restaurar el autoguardado previo?")) {
         const datosImportados = JSON.parse(backup);
         
+        // Limpiamos los días sueltos actuales para evitar que sobrevivan restos corruptos
+        Object.keys(localStorage).forEach(clave => {
+            if (/^\d{4}-\d{2}-\d{2}$/.test(clave)) localStorage.removeItem(clave);
+        });
+
+        // Volcamos la copia limpia
         Object.keys(datosImportados).forEach(clave => {
             localStorage.setItem(clave, datosImportados[clave]);
         });
         
-        alert("🔄 ¡Historial de fichajes restablecido con éxito!");
+        alert("🔄 ¡Historial restablecido con éxito!");
         window.location.reload();
     }
 }
 
-// 3. Permite descargar manualmente un archivo rígido (.json) fuera del dispositivo
+// 3. Exportación Física Externa
 function crearCopiaSeguridad() {
     let datosApp = {};
     for (let i = 0; i < localStorage.length; i++) {
         let clave = localStorage.key(i);
-        if (/^\d{4}-\d{2}-\d{2}$/.test(clave)) {
-            datosApp[clave] = localStorage.getItem(clave);
-        }
+        if (/^\d{4}-\d{2}-\d{2}$/.test(clave)) datosApp[clave] = localStorage.getItem(clave);
     }
 
     if (Object.keys(datosApp).length === 0) {
-        alert("No hay ningún dato en el calendario que exportar.");
+        alert("No existen datos analíticos que exportar en este momento.");
         return;
     }
 
     let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datosApp));
     let downloadAnchor = document.createElement('a');
     downloadAnchor.setAttribute("href", dataStr);
-    downloadAnchor.setAttribute("download", `Copia_Manual_Fichajes.json`);
+    downloadAnchor.setAttribute("download", `Copia_Seguridad_Calendario.json`);
     document.body.appendChild(downloadAnchor);
     downloadAnchor.click();
     downloadAnchor.remove();
 }
 
-// 4. Permite arrastrar un archivo .json guardado en PC o Drive para restaurar en teléfonos nuevos
+// 4. Restauración desde Archivo Fuerte Externa (Filtro Anti-Archivos Corruptos)
 function restaurarCopiaSeguridad(input) {
     const archivo = input.files[0];
     if (!archivo) return;
@@ -423,33 +403,51 @@ function restaurarCopiaSeguridad(input) {
     lector.onload = function(e) {
         try {
             const datosImportados = JSON.parse(e.target.result);
-            if (confirm("¿Quieres inyectar esta copia de archivo? Se añadirá a tu calendario activo.")) {
-                Object.keys(datosImportados).forEach(clave => {
+            
+            // Verificación estricta: Comprobamos si el JSON tiene un formato de fecha válido de la app
+            const llaves = Object.keys(datosImportados);
+            const estructuraValida = llaves.length > 0 && llaves.every(k => /^\d{4}-\d{2}-\d{2}$/.test(k));
+
+            if (!estructuraValida) {
+                alert("❌ Error: El archivo seleccionado no es una copia de seguridad válida de esta aplicación.");
+                return;
+            }
+
+            if (confirm("¿Confirmas la inyección de este archivo externo? Sustituirá tu registro de horas actual.")) {
+                Object.keys(localStorage).forEach(clave => {
+                    if (/^\d{4}-\d{2}-\d{2}$/.test(clave)) localStorage.removeItem(clave);
+                });
+
+                llaves.forEach(clave => {
                     localStorage.setItem(clave, datosImportados[clave]);
                 });
-                alert("¡Copia externa leída y cargada correctamente!");
+
+                // Consolidamos la caja fuerte interna con el archivo recién subido
+                guardarCopiaAutomatica(); 
+                alert("¡Copia externa inyectada y asegurada con éxito!");
                 window.location.reload();
             }
         } catch (error) {
-            alert("Error: El archivo suministrado no contiene una estructura válida.");
+            alert("❌ Error crítico: Archivo corrupto o ilegible.");
         }
     };
     lector.readAsText(archivo);
 }
 
-// ------------------ Inicializar ------------------
+// ================= INICIALIZACIÓN DE ENTORNO SEGURIZADO =================
+
+// Arrancamos el calendario en pantalla
 generarCalendario();
 
-// ------------------ Registro de Service Worker Inteligente ------------------
+// Guardamos el estado inicial limpio nada más abrir la app
+guardarCopiaAutomatica();
+
+// ------------------ Service Worker ------------------
 if ("serviceWorker" in navigator) {
     const esLocal = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
-    
-    if (esLocal) {
-        console.log("Modo desarrollo local activo: Service Worker desactivado para evitar caché.");
-    } else {
+    if (!esLocal) {
         navigator.serviceWorker.register("service-worker.js")
         .then(reg => {
-            console.log("Service Worker registrado en producción:", reg.scope);
             reg.onupdatefound = () => {
                 const installingWorker = reg.installing;
                 installingWorker.onstatechange = () => {
@@ -458,7 +456,6 @@ if ("serviceWorker" in navigator) {
                     }
                 };
             };
-        })
-        .catch(err => console.log("Error SW:", err));
+        }).catch(err => console.log("Error SW:", err));
     }
 }
