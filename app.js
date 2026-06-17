@@ -190,7 +190,7 @@ function eliminarDia(){
     cerrar();
 }
 
-// ------------------ Navegación ------------------
+// ------------------ Navigation ------------------
 function mesAnterior(){
     mes--;
     if(mes<0){ mes=11; año--; }
@@ -242,7 +242,73 @@ function mostrarResumen(){
             <div class="dato"><span>Trabajo urbano:</span><span>${d.urbanos}</span></div>
         </div>`;
     }
+
+    // 🌟 NUEVO AÑADIDO: Agrega el botón de exportación al final si existen tarjetas mensuales de datos
+    if(html !== "") {
+        html += `
+            <div style="grid-column: 1 / -1; text-align: center; margin-top: 25px; margin-bottom: 25px;">
+                <button onclick="exportarAExcel()" style="
+                    background: #16a34a; 
+                    color: white; 
+                    border: none; 
+                    padding: 14px 28px; 
+                    font-size: 1.05em; 
+                    font-weight: bold; 
+                    border-radius: 10px; 
+                    cursor: pointer; 
+                    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+                    transition: background 0.2s;">
+                    📥 Exportar Historial a Excel (CSV)
+                </button>
+            </div>`;
+    }
+
     resumenDiv.innerHTML = html;
+}
+
+// 🌟 NUEVA FUNCIÓN: Genera y descarga el archivo Excel (CSV) compatible
+function exportarAExcel() {
+    let contenidoCSV = "Fecha;Tipo de Dia;Horas Totales;Turnos Fichados;Notas\n";
+    
+    let fechas = Object.keys(localStorage)
+        .filter(key => /^\d{4}-\d{2}-\d{2}$/.test(key))
+        .sort();
+
+    if (fechas.length === 0) {
+        alert("No tienes ningún dato registrado para exportar todavía.");
+        return;
+    }
+
+    fechas.forEach(fecha => {
+        let datos = JSON.parse(localStorage.getItem(fecha));
+        if (!datos) return;
+
+        let tipo = datos.tipo || "normal";
+        let horas = datos.horas || "0h 0m";
+        let nota = datos.nota ? datos.nota.replace(/[\n\r;]/g, " ") : "";
+
+        let turnosTexto = "";
+        if (datos.turnos && datos.turnos.length) {
+            turnosTexto = datos.turnos.map(t => `${t.entrada || "..."}-${t.salida || "..."}`).join(" | ");
+        } else {
+            turnosTexto = "Sin turnos";
+        }
+
+        contenidoCSV += `${fecha};${tipo.toUpperCase()};${horas};${turnosTexto};${nota}\n`;
+    });
+
+    // Crear el archivo con cabecera UTF-8 BOM para que Excel abra las tildes y caracteres correctamente
+    let blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), contenidoCSV], { type: "text/csv;charset=utf-8;" });
+    let link = document.createElement("a");
+    
+    let url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `Historial_Fichajes_${new Date().getFullYear()}.csv`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
 
 // ------------------ Inicializar ------------------
