@@ -1,3 +1,7 @@
+/* ==========================================================================
+   LÓGICA DEL CALENDARIO DE ENTRADAS Y PROTECCIÓN INTEGRAL DE DATOS
+   ========================================================================== */
+
 const calendar = document.getElementById("calendar");
 const mesActualTexto = document.getElementById("mesActual");
 const formulario = document.getElementById("formulario");
@@ -14,7 +18,7 @@ let fechaActual = "";
 
 const nombresMes = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 
-// ------------------ Calendario ------------------
+// ------------------ Construcción del Calendario Visual ------------------
 function generarCalendario(){
     calendar.innerHTML="";
     mesActualTexto.innerText = nombresMes[mes]+" "+año;
@@ -34,6 +38,13 @@ function generarCalendario(){
 
         let fecha=`${año}-${String(mes+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
         div.dataset.fecha = fecha;
+
+        // 🌟 IDENTIFICACIÓN DE FINES DE SEMANA: Sábado (6) o Domingo (0)
+        let objetoFecha = new Date(año, mes, i);
+        let diaSemana = objetoFecha.getDay(); 
+        if(diaSemana === 0 || diaSemana === 6) {
+            div.classList.add("fin-de-semana");
+        }
 
         if(fecha === fechaHoyReal) {
             div.classList.add("hoy-actual");
@@ -69,7 +80,7 @@ function generarCalendario(){
     mostrarResumen();
 }
 
-// ------------------ Formulario ------------------
+// ------------------ Panel de Acciones (Formulario) ------------------
 function abrirFormulario(fecha){
     fechaActual=fecha;
     formulario.classList.remove("hidden");
@@ -92,7 +103,7 @@ function abrirFormulario(fecha){
                 if(minutos < 0) minutos += 1440; 
 
                 let horas = Math.floor(minutos/60);
-                let mins = minutes = minutos % 60;
+                let mins = minutos % 60;
                 listaTurnos.innerHTML += `T${i+1}: ${t.entrada} - ${t.salida} (${horas}h ${mins}m)<br>`;
             } else if(t.entrada && !t.salida){
                 listaTurnos.innerHTML += `T${i+1}: ${t.entrada} - ...<br>`;
@@ -107,8 +118,7 @@ function cerrar(){
     formulario.classList.add("hidden");
 }
 
-// ------------------ Acciones de Fichaje (Disparadores de Backup Directo) ------------------
-// ------------------ Fichar Entrada Modificado ------------------
+// ------------------ Operaciones de Fichajes Inteligentes ------------------
 function ficharEntrada(){
     let datos=JSON.parse(localStorage.getItem(fechaActual))||{};
     if(!datos.turnos) datos.turnos=[];
@@ -129,26 +139,7 @@ function ficharEntrada(){
     localStorage.setItem(fechaActual,JSON.stringify(datos));
     
     generarCalendario();
-    cerrar(); // 🌟 ¡MEJORA! Ahora se cierra solo al instante al fichar la entrada
-}
-
-// ------------------ Autocompletado de Jornada Urbana Modificado ------------------
-function aplicarUrbanoAutomatico() {
-    if (!fechaActual) return;
-
-    let turnoUrbano = { entrada: "07:15", salida: "15:15" };
-    const datosDia = {
-        tipo: "urbano", 
-        nota: notasInput.value || "", 
-        turnos: [turnoUrbano],
-        horas: "8h 00m" 
-    };
-
-    guardarCopiaAutomatica(); 
-    localStorage.setItem(fechaActual, JSON.stringify(datosDia));
-    
-    generarCalendario();
-    cerrar(); // 🌟 ¡MEJORA! Aseguramos que se cierre solo también en el botón de Urbano
+    cerrar(); // 🌟 Cierre automático para guardarse el móvil al instante
 }
 
 function ficharSalida(){
@@ -218,21 +209,19 @@ function aplicarUrbanoAutomatico() {
     localStorage.setItem(fechaActual, JSON.stringify(datosDia));
     
     generarCalendario();
-    cerrar();
+    cerrar(); // 🌟 Cierre automático optimizado para un toque en Urbano
 }
 
-// ------------------ Eliminar Día (Lógica Inteligente anti-fantasmas) ------------------
 function eliminarDia(){
     if(localStorage.getItem(fechaActual)) {
-        // Hacemos una copia JUSTO ANTES de borrar. Esto captura el día vivo en el autoguardado.
-        guardarCopiaAutomatica(); 
+        guardarCopiaAutomatica(); // El autoguardado retiene el día por si fue por error
         localStorage.removeItem(fechaActual);
     }
     generarCalendario();
     cerrar();
 }
 
-// ------------------ Navegación ------------------
+// ------------------ Navegación Temporal ------------------
 function mesAnterior(){
     mes--;
     if(mes<0){ mes=11; año--; }
@@ -244,7 +233,7 @@ function mesSiguiente(){
     generarCalendario();
 }
 
-// ------------------ Resumenes ------------------
+// ------------------ Cálculos y Gestión de Resúmenes ------------------
 function calcularResumen(){
     let resumen={};
     Object.keys(localStorage).forEach(key=>{
@@ -304,8 +293,13 @@ function mostrarResumen(){
                 <button onclick="restaurarCopiaAutomatica()" style="flex: 1; background: #334155; color: white; border: 1px solid #475569; padding: 12px; font-size: 0.9em; font-weight: bold; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
                     🔄 Usar Autoguardado
                 </button>
-                <button onclick="crearCopiaSeguridad()" style="flex: 1; background: #1e293b; color: #cbd5e1; border: 1px solid #334155; padding: 12px; font-size: 0.9em; font-weight: bold; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
-                    🛡️ Descargar Archivo
+                <button onclick="onClickSubirArchivo()" style="flex: 1; background: #1e293b; color: #cbd5e1; border: 1px solid #334155; padding: 12px; font-size: 0.9em; font-weight: bold; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                    🛡️ Cargar Archivo
+                </button>
+            </div>
+            <div style="text-align: center;">
+                <button onclick="crearCopiaSeguridad()" style="background: none; border: none; color: #64748b; font-size: 0.85em; text-decoration: underline; cursor: pointer; padding: 5px;">
+                    📥 Guardar copia física (.json)
                 </button>
             </div>
             <input type="file" id="inputBackup" style="display:none;" accept=".json" onchange="restaurarCopiaSeguridad(this)">
@@ -348,9 +342,8 @@ function exportarAExcel() {
     document.body.removeChild(link);
 }
 
-// ================= LÓGICA DE PROTECCIÓN ABSOLUTA (BACKUP) =================
+// ================= SISTEMA DE SEGURIDAD DEFENSIVO (BACKUPS) =================
 
-// 1. Guarda de forma fidedigna el estado del calendario antes de cualquier alteración
 function guardarCopiaAutomatica() {
     let datosApp = {};
     for (let i = 0; i < localStorage.length; i++) {
@@ -359,13 +352,11 @@ function guardarCopiaAutomatica() {
             datosApp[clave] = localStorage.getItem(clave);
         }
     }
-    // Salvaguardamos únicamente si existen registros reales en la sesión activa
     if (Object.keys(datosApp).length > 0) {
         localStorage.setItem('backup_automatico_interno', JSON.stringify(datosApp));
     }
 }
 
-// 2. Botón de Deshacer: Restaura la última versión guardada
 function restaurarCopiaAutomatica() {
     const backup = localStorage.getItem('backup_automatico_interno');
     if (!backup) {
@@ -376,12 +367,10 @@ function restaurarCopiaAutomatica() {
     if (confirm("⚠️ ¿Deseas deshacer los últimos cambios y restaurar el autoguardado previo?")) {
         const datosImportados = JSON.parse(backup);
         
-        // Limpiamos los días sueltos actuales para evitar que sobrevivan restos corruptos
         Object.keys(localStorage).forEach(clave => {
             if (/^\d{4}-\d{2}-\d{2}$/.test(clave)) localStorage.removeItem(clave);
         });
 
-        // Volcamos la copia limpia
         Object.keys(datosImportados).forEach(clave => {
             localStorage.setItem(clave, datosImportados[clave]);
         });
@@ -391,7 +380,6 @@ function restaurarCopiaAutomatica() {
     }
 }
 
-// 3. Exportación Física Externa
 function crearCopiaSeguridad() {
     let datosApp = {};
     for (let i = 0; i < localStorage.length; i++) {
@@ -413,7 +401,10 @@ function crearCopiaSeguridad() {
     downloadAnchor.remove();
 }
 
-// 4. Restauración desde Archivo Fuerte Externa (Filtro Anti-Archivos Corruptos)
+function onClickSubirArchivo() {
+    document.getElementById('inputBackup').click();
+}
+
 function restaurarCopiaSeguridad(input) {
     const archivo = input.files[0];
     if (!archivo) return;
@@ -422,8 +413,6 @@ function restaurarCopiaSeguridad(input) {
     lector.onload = function(e) {
         try {
             const datosImportados = JSON.parse(e.target.result);
-            
-            // Verificación estricta: Comprobamos si el JSON tiene un formato de fecha válido de la app
             const llaves = Object.keys(datosImportados);
             const estructuraValida = llaves.length > 0 && llaves.every(k => /^\d{4}-\d{2}-\d{2}$/.test(k));
 
@@ -441,7 +430,6 @@ function restaurarCopiaSeguridad(input) {
                     localStorage.setItem(clave, datosImportados[clave]);
                 });
 
-                // Consolidamos la caja fuerte interna con el archivo recién subido
                 guardarCopiaAutomatica(); 
                 alert("¡Copia externa inyectada y asegurada con éxito!");
                 window.location.reload();
@@ -453,15 +441,12 @@ function restaurarCopiaSeguridad(input) {
     lector.readAsText(archivo);
 }
 
-// ================= INICIALIZACIÓN DE ENTORNO SEGURIZADO =================
+// ================= INICIALIZACIÓN DEL ENTORNO SEGURIZADO =================
 
-// Arrancamos el calendario en pantalla
 generarCalendario();
+guardarCopiaAutomatica(); // Captura limpia del estado al arrancar la app
 
-// Guardamos el estado inicial limpio nada más abrir la app
-guardarCopiaAutomatica();
-
-// ------------------ Service Worker ------------------
+// ------------------ Service Worker (PWA) ------------------
 if ("serviceWorker" in navigator) {
     const esLocal = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
     if (!esLocal) {

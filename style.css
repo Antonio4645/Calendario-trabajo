@@ -1,303 +1,311 @@
-/* ------------------ CSS Profesional y Mobile-First ------------------ */
-body {
-    font-family: 'Segoe UI', Arial, sans-serif;
+/* ==========================================================================
+   ESTILOS PREMIUM GRAPHITE - ADAPTADO A TU ESTRUCTURA
+   ========================================================================== */
+
+* {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    /* 🌟 MI DISEÑO: Fondo grafito ultra oscuro, súper relajante y premium */
-    background: linear-gradient(to bottom, #121824, #0a0d14);
-    color: #e2e8f0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: #0f172a;
+    color: #f8fafc;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     min-height: 100vh;
 }
 
-/* ------------------ Header ------------------ */
+/* 🏢 Contenedor del Logo y Título Principal */
 .header {
     display: flex;
     align-items: center;
-    padding: 20px;
-    /* 🌟 MI DISEÑO: Cabecera integrada sin cortes bruscos */
-    background: #1e293b;
-    color: white;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    border-bottom: 1px solid #334155;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 15px;
+    width: 100%;
+    max-width: 450px;
 }
 
-.logo { width: 70px; height: auto; margin-right: 15px; }
-.header h1 { font-size: 2em; margin: 0; font-weight: 700; letter-spacing: -0.5px; }
+/* Blindaje definitivo para que el logo no se rompa ni se haga gigante */
+.header img {
+    height: 32px !important;
+    width: auto !important;
+    object-fit: contain !important;
+}
 
-/* ------------------ Navegación ------------------ */
+.header h1 {
+    font-size: 1.4em;
+    font-weight: 600;
+    color: #f8fafc;
+}
+
+/* 🗺️ Barra de Navegación de Meses */
 .nav {
     display: flex;
-    justify-content: center;
     align-items: center;
-    gap: 15px;
-    margin: 25px 0;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 450px;
+    margin-bottom: 15px;
+    padding: 0 5px;
 }
 
 .nav button {
-    padding: 12px 20px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    border-radius: 10px;
-    border: 1px solid #334155;
     background: #1e293b;
-    color: #f1f5f9;
+    border: 1px solid #334155;
+    color: #f8fafc;
+    padding: 8px 16px;
+    font-size: 0.95em;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
     box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    transition: all 0.2s ease;
+    transition: background 0.2s;
 }
 
-.nav button:hover {
+.nav button:active {
     background: #334155;
-    border-color: #475569;
-    transform: translateY(-1px);
 }
 
 #mesActual {
-    font-size: 1.4em;
-    font-weight: 700;
-    color: #f8fafc;
-    min-width: 150px;
+    font-size: 1.25em;
+    font-weight: 600;
+    letter-spacing: 0.5px;
     text-align: center;
 }
 
-/* ------------------ Semana ------------------ */
-.semana { 
-    display: grid; 
-    grid-template-columns: repeat(7, 1fr); 
-    font-weight: 700; 
-    margin: 0 10px; 
-    text-align: center; 
-    color: #94a3b8; /* Gris suave para los días de la semana */
-    font-size: 1.1em; 
+/* 📅 Cabecera de los días de la semana (L M X J V S D) */
+.semana {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 6px;
+    width: 100%;
+    max-width: 450px;
+    text-align: center;
+    font-weight: bold;
+    color: #94a3b8;
+    font-size: 0.9em;
+    margin-bottom: 8px;
+    padding: 0 10px;
 }
-.semana div { padding: 10px 0; }
 
-/* ------------------ Calendario ------------------ */
+/* Contenedor Cuadrícula del Calendario */
 #calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 10px;
-    padding: 15px;
+    gap: 6px;
+    width: 100%;
+    max-width: 450px;
+    background: #1e293b;
+    padding: 10px;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+    border: 1px solid #334155;
 }
 
-/* 🌟 MEJORA: Las casillas por defecto del mes con relieve premium */
+/* Celdas de los Días */
 .day {
-    position: relative;
-    background: #1e293b; /* Gris oscuro azulado para días vacíos */
-    cursor: pointer;
-    border-radius: 14px; /* Esquinas ligeramente más suaves y modernas */
-    min-height: 95px;
-    font-size: 1.4em; /* Número grande */
+    aspect-ratio: 1;
+    background-color: #0f172a;
+    border-radius: 10px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    padding: 5px;
-    box-sizing: border-box;
-    white-space: pre-line;
-    
-    /* Contraste Radical para el Número */
-    color: #ffffff !important;
-    font-weight: 700 !important;
-
-    /* 🛡️ Efecto Sombra de Relieve Flotante en Capas (Gama Alta) */
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
-    /* Transición amortiguada ideal para gestos táctiles en pantallas móviles */
-    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    font-size: 0.85em;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid #1e293b;
+    transition: transform 0.1s, background-color 0.2s;
+    color: #f1f5f9;
 }
 
-/* 🌟 MEJORA: Elevación física al pasar el puntero (PC) */
-.day:hover {
-    transform: translateY(-4px);
-    background: #25334a;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
-}
-
-/* 🌟 MEJORA: Sensación de clic mecánico al pulsar con el dedo (Móvil) */
 .day:active {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    transform: scale(0.95);
 }
 
-/* ------------------ Mi Paleta de Colores Inteligente ------------------ */
-.normal { 
-    background-color: #1e3a8a !important; /* Azul Eléctrico Profundo */
-    color: #ffffff !important; 
-    border-bottom: 4px solid #3b82f6; 
-}
-.vacaciones { 
-    background-color: #064e3b !important; /* Verde Bosque Nocturno */
-    color: #34d399 !important; /* Texto Esmeralda Brillante */
-}
-.festivo { 
-    background-color: #581c87 !important; /* Púrpura Real */
-    color: #f1f5f9 !important;
-    border-bottom: 4px solid #a855f7;
-}
-.festivo-trabajado { 
-    background-color: #78350f !important; /* Óxido / Cobre Oscuro */
-    color: #fbbf24 !important; /* Texto Ámbar */
-    border-bottom: 4px solid #f59e0b; 
-}
-.urbano { 
-    background-color: #334155 !important; /* Gris Pizarra */
-    color: #f1f5f9 !important; 
-    border-bottom: 4px solid #94a3b8; 
+/* 🌟 EFECTO FIN DE SEMANA: Atenuar número en Sábados y Domingos */
+.day.fin-de-semana {
+    color: #526173 !important; /* Gris ceniza suave */
 }
 
-/* Días vacíos fuera de rango */
-.day:empty {
-    background-color: rgba(255, 255, 255, 0.01) !important;
-    border: 1px dashed rgba(255, 255, 255, 0.03) !important;
-    box-shadow: none;
-    pointer-events: none;
-}
-
-/* Destacar el Día Actual (Alta Visibilidad Neón) */
-.day.hoy-actual {
-    border: 2px solid #f97316 !important; /* Naranja Puro */
-    box-shadow: 0 0 15px rgba(249, 115, 22, 0.5) !important;
-    background: #0f172a !important;
-}
-
-/* Indicador de Notas */
+/* Lápiz indicador de Notas */
 .indicador-nota {
     position: absolute;
-    top: 6px;
-    right: 8px;
-    font-size: 0.6em;
+    top: 2px;
+    right: 2px;
+    font-size: 0.75em;
 }
 
-/* ------------------ Formulario Estilo Bottom Sheet ------------------ */
+/* Enmarcar el día de hoy */
+.hoy-actual {
+    border: 2px solid #38bdf8 !important;
+    box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+}
+
+/* ==========================================================================
+   COLORES DE TURNOS (Prioritarios sobre el texto atenuado)
+   ========================================================================== */
+.day.normal { background-color: #1e3a8a !important; color: #ffffff !important; border: none; }
+.day.vacaciones { background-color: #065f46 !important; color: #ffffff !important; border: none; }
+.day.festivo { background-color: #7f1d1d !important; color: #ffffff !important; border: none; }
+.day.festivo-trabajado { background-color: #a21caf !important; color: #ffffff !important; border: none; }
+.day.urbano { background-color: #475569 !important; color: #ffffff !important; border: none; }
+
+/* ==========================================================================
+   FORMULARIO INTERNO MODAL
+   ========================================================================== */
 #formulario {
     position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    max-width: 100%;
-    background: #0f172afc; /* Fondo oscuro liso */
-    padding: 25px 20px 40px 20px;
-    border-radius: 24px 24px 0 0;
-    box-shadow: 0 -10px 30px rgba(0,0,0,0.6);
-    font-size: 1.1em;
-    z-index: 100;
-    backdrop-filter: blur(15px);
-    box-sizing: border-box;
-    max-height: 85vh;
-    overflow-y: auto;
-    transition: transform 0.3s ease-out;
-    border-top: 1px solid #334155;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(15, 23, 42, 0.85);
+    backdrop-filter: blur(4px);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    padding: 15px;
 }
 
-#formulario.hidden {
-    display: block !important;
-    transform: translateY(100%);
+.hidden {
+    display: none !important;
 }
 
-#formulario h2, #formulario h3 { margin-top: 0; color: #fff; font-weight: 700; }
-#formulario label { display: block; margin-top: 15px; font-weight: 600; color: #94a3b8; }
-
-#formulario input, #formulario select, #formulario textarea {
-    display: block;
+/* Estilo para la caja contenedora interna del formulario */
+#formulario h2, #formulario h3, #formulario label, #formulario select, #formulario textarea, #formulario .grid-botones, #formulario #listaTurnos {
     width: 100%;
-    margin: 10px 0;
-    font-size: 16px !important;
-    padding: 12px;
-    border-radius: 10px;
-    border: 1px solid #334155;
-    background-color: #1e293b;
+    max-width: 380px;
+}
+
+#formulario {
     color: #f8fafc;
-    box-sizing: border-box;
 }
 
-/* Rejilla de botones */
+#formulario h2 {
+    font-size: 1.4em;
+    color: #38bdf8;
+    margin-bottom: 10px;
+    text-align: center;
+}
+
+#formulario h3 {
+    font-size: 1em;
+    color: #94a3b8;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+#formulario label {
+    font-size: 0.9em;
+    color: #94a3b8;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    display: block;
+}
+
+#formulario select, 
+#formulario textarea {
+    background: #0f172a;
+    border: 1px solid #475569;
+    color: #f8fafc;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 1em;
+    margin-bottom: 10px;
+}
+
+#formulario textarea {
+    resize: none;
+}
+
+#listaTurnos {
+    background: #0f172a;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 0.9em;
+    border: 1px solid #334155;
+    color: #cbd5e1;
+    line-height: 1.4;
+    margin-bottom: 10px;
+}
+
+/* Rejilla de Botones del Formulario */
 .grid-botones {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 12px;
-    margin-top: 20px;
+    gap: 10px;
 }
 
-#formulario button {
-    padding: 16px;
-    font-size: 1em;
-    font-weight: 700;
-    border-radius: 12px;
+.grid-botones button {
+    padding: 12px;
+    font-size: 0.95em;
+    font-weight: bold;
+    border-radius: 10px;
     border: none;
     cursor: pointer;
     color: white;
-    box-sizing: border-box;
-    transition: all 0.2s;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+    -webkit-appearance: none;
 }
 
-#formulario button:active { transform: scale(0.97); }
+.grid-botones button:active {
+    filter: brightness(0.85);
+}
 
-.btn-entrada { background: #16a34a; }
-.btn-entrada:hover { background: #15803d; }
-.btn-salida { background: #2563eb; }
-.btn-salida:hover { background: #1d4ed8; }
-.btn-eliminar { background: #dc2626; }
-.btn-eliminar:hover { background: #b91c1c; }
+/* Asignación de colores a tus botones de acción */
+.btn-entrada { background: #2563eb; }
+.btn-salida { background: #dc2626; }
+.btn-eliminar { background: #b91c1c; }
 .btn-cancelar { background: #475569; }
-.btn-cancelar:hover { background: #334155; }
-.btn-guardar { background: #ea580c; grid-column: span 2; }
-.btn-guardar:hover { background: #c2410c; }
+.btn-guardar { background: #0d9488; grid-column: span 2; }
 
-.hidden { display: none !important; }
-
-/* ------------------ Resumen mensual ------------------ */
+/* ==========================================================================
+   TARJETAS DE RESUMEN MENSUAL
+   ========================================================================== */
 #resumen {
-    margin: 25px 20px;
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
+    width: 100%;
+    max-width: 450px;
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-bottom: 40px;
 }
 
-/* 🌟 MEJORA: Tarjetas de resumen con esquinas suavizadas y profundidad 3D */
 .mes-card {
     background: #1e293b;
-    padding: 24px; /* Un pelín más de aire interno */
-    border-radius: 16px; /* Bordes redondeados premium */
-    text-align: left;
-    border-top: 5px solid #3b82f6; /* Línea decorativa superior sutilmente más gruesa */
-    
-    /* Sombra difusa multicapa para separarlo con estilo del fondo de la app */
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
+    border-radius: 14px;
+    padding: 16px;
+    border: 1px solid #334155;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
 }
 
-.mes-card h3 { margin-top: 0; margin-bottom: 15px; font-size: 1.3em; color: #3b82f6; font-weight: 700; }
-.mes-card .dato {
+.mes-card h3 {
+    font-size: 1.1em;
+    color: #38bdf8;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 5px;
+    text-align: left;
+}
+
+.dato {
     display: flex;
     justify-content: space-between;
-    padding: 8px 0;
-    font-size: 1.05em;
-    border-bottom: 1px solid #334155;
+    font-size: 0.95em;
+    margin: 6px 0;
     color: #cbd5e1;
 }
-.mes-card .dato:last-child { border-bottom: none; }
 
-/* ------------------ Ajustes Móviles ------------------ */
-@media(max-width: 480px) {
-    .header { padding: 15px 12px; }
-    .header h1 { font-size: 1.5em; }
-    .logo { width: 45px; }
-    .nav button { padding: 10px 14px; font-size: 14px; }
-    #mesActual { font-size: 1.1em; }
-    .semana { font-size: 0.95em; }
-    #calendar { gap: 6px; padding: 8px; }
-    /* Ajustes táctiles refinados para móviles */
-    .day { 
-        min-height: 75px; 
-        font-size: 1.1em; 
-        border-radius: 10px; 
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-    .day:hover {
-        transform: translateY(-2px); /* Menos agresivo el hover en móvil */
-    }
-    .indicador-nota { top: 3px; right: 5px; font-size: 0.55em; }
+.dato span:last-child {
+    font-weight: bold;
+    color: #f8fafc;
 }
