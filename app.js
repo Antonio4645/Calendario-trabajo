@@ -242,28 +242,40 @@ function mostrarResumen(){
             <div class="dato"><span>Trabajo urbano:</span><span>${d.urbanos}</span></div>
         </div>`;
     }
-
-    // 🌟 NUEVO AÑADIDO: Agrega el botón de exportación al final si existen tarjetas mensuales de datos
-    if(html !== "") {
-        html += `
-            <div style="grid-column: 1 / -1; text-align: center; margin-top: 25px; margin-bottom: 25px;">
-                <button onclick="exportarAExcel()" style="
-                    background: #16a34a; 
-                    color: white; 
-                    border: none; 
-                    padding: 14px 28px; 
-                    font-size: 1.05em; 
-                    font-weight: bold; 
-                    border-radius: 10px; 
-                    cursor: pointer; 
-                    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-                    transition: background 0.2s;">
-                    📥 Exportar Historial a Excel (CSV)
-                </button>
-            </div>`;
-    }
-
+    
+    // Primero renderizamos las tarjetas de los meses en su cuadrícula
     resumenDiv.innerHTML = html;
+
+    // 🌟 ARREGLO MÓVIL: Buscamos si ya existe el botón en la página para no duplicarlo
+    let botonExistente = document.getElementById("btnExportarExcel");
+    if (botonExistente) botonExistente.remove();
+
+    // Si hay datos guardados, creamos el botón FUERA de la cuadrícula conflictiva
+    if(html !== "") {
+        let contenedorBoton = document.createElement("div");
+        contenedorBoton.id = "btnExportarExcel";
+        contenedorBoton.style.cssText = "text-align: center; margin: 30px auto; width: 90%; max-width: 350px; clear: both;";
+        
+        contenedorBoton.innerHTML = `
+            <button onclick="exportarAExcel()" style="
+                width: 100%;
+                background: #16a34a; 
+                color: white; 
+                border: none; 
+                padding: 16px 20px; 
+                font-size: 1.1em; 
+                font-weight: bold; 
+                border-radius: 12px; 
+                cursor: pointer; 
+                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+                transition: background 0.2s;
+                -webkit-appearance: none;">
+                📥 Exportar Historial a Excel
+            </button>`;
+            
+        // Insertamos el botón justo después del bloque de los meses, libre de problemas de rejilla
+        resumenDiv.parentNode.insertBefore(contenedorBoton, resumenDiv.nextSibling);
+    }
 }
 
 // 🌟 NUEVA FUNCIÓN: Genera y descarga el archivo Excel (CSV) compatible
