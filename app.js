@@ -15,6 +15,7 @@ let fechaActual = "";
 const nombresMes = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 
 // ------------------ Calendario ------------------
+// ------------------ Calendario Actualizado ------------------
 function generarCalendario(){
     calendar.innerHTML="";
     mesActualTexto.innerText = nombresMes[mes]+" "+año;
@@ -22,6 +23,10 @@ function generarCalendario(){
     let diasMes = new Date(año, mes+1,0).getDate();
     let primerDia = new Date(año, mes, 1).getDay();
     if(primerDia===0) primerDia=7;
+
+    // Obtener la fecha de hoy real del sistema para compararla
+    let objetoHoy = new Date();
+    let fechaHoyReal = `${objetoHoy.getFullYear()}-${String(objetoHoy.getMonth()+1).padStart(2,'0')}-${String(objetoHoy.getDate()).padStart(2,'0')}`;
 
     for(let i=1;i<primerDia;i++) calendar.appendChild(document.createElement("div"));
 
@@ -31,6 +36,11 @@ function generarCalendario(){
 
         let fecha=`${año}-${String(mes+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
         div.dataset.fecha = fecha;
+
+        // MARCA DE HOY: Si la casilla coincide con el día de hoy real, le añadimos una clase CSS
+        if(fecha === fechaHoyReal) {
+            div.classList.add("hoy-actual");
+        }
 
         let datos = JSON.parse(localStorage.getItem(fecha));
 
@@ -43,9 +53,21 @@ function generarCalendario(){
                     datos.tipo==="festivo-trabajado"?"FT":
                     datos.tipo==="urbano"?"TU":"";
             if(datos.horas) letra+=" ("+datos.horas+")";
+
+            // INDICADOR DE NOTA: Si el día tiene una nota escrita y no está vacía, añadimos un puntito visual
+            if(datos.nota && datos.nota.trim() !== "") {
+                let dot = document.createElement("span");
+                dot.classList.add("indicador-nota");
+                dot.innerHTML = "✏️"; // Un mini lápiz elegante en la esquina
+                div.appendChild(dot);
+            }
         }
 
-        div.innerText=i+"\n"+letra;
+        // Para no borrar el lápiz si existía, creamos un contenedor para el texto del día
+        let textoDia = document.createElement("span");
+        textoDia.innerText = i + "\n" + letra;
+        div.appendChild(textoDia);
+
         div.onclick=()=>abrirFormulario(fecha);
         calendar.appendChild(div);
     }
@@ -226,8 +248,28 @@ function mostrarResumen(){
 // ------------------ Inicializar ------------------
 generarCalendario();
 
-if("serviceWorker" in navigator){
-    navigator.serviceWorker.register("service-worker.js")
-    .then(()=>console.log("Service Worker registrado"))
-    .catch(err=>console.log("Error SW:",err));
+// ------------------ Registro de Service Worker Inteligente ------------------
+if ("serviceWorker" in navigator) {
+    // Detectamos si estás en el ordenador (Live Server)
+    const esLocal = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
+    
+    if (esLocal) {
+        // SI ESTÁS EN EL PC: No registramos nada para que nunca más te dé error 404 ni congele los colores
+        console.log("Modo desarrollo local activo: Service Worker desactivado para evitar caché.");
+    } else {
+        // SI ESTÁS EN GITHUB (INTERNET REAL): Aquí sí funciona perfecto
+        navigator.serviceWorker.register("service-worker.js")
+        .then(reg => {
+            console.log("Service Worker registrado en producción:", reg.scope);
+            reg.onupdatefound = () => {
+                const installingWorker = reg.installing;
+                installingWorker.onstatechange = () => {
+                    if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        window.location.reload();
+                    }
+                };
+            };
+        })
+        .catch(err => console.log("Error SW:", err));
+    }
 }

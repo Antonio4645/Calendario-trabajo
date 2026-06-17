@@ -3,8 +3,9 @@ body {
     font-family: 'Segoe UI', Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(to bottom, #017bb8, #012152);
-    color: #f8f7f7;
+    /* 🌟 MI DISEÑO: Fondo grafito ultra oscuro, súper relajante y premium */
+    background: linear-gradient(to bottom, #121824, #0a0d14);
+    color: #e2e8f0;
     min-height: 100vh;
 }
 
@@ -13,16 +14,18 @@ body {
     display: flex;
     align-items: center;
     padding: 20px;
-    background: #014d7a;
+    /* 🌟 MI DISEÑO: Cabecera integrada sin cortes bruscos */
+    background: #1e293b;
     color: white;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
     position: sticky;
     top: 0;
     z-index: 10;
+    border-bottom: 1px solid #334155;
 }
 
 .logo { width: 70px; height: auto; margin-right: 15px; }
-.header h1 { font-size: 2em; margin: 0; }
+.header h1 { font-size: 2em; margin: 0; font-weight: 700; letter-spacing: -0.5px; }
 
 /* ------------------ Navegación ------------------ */
 .nav {
@@ -30,209 +33,249 @@ body {
     justify-content: center;
     align-items: center;
     gap: 15px;
-    margin: 20px 0;
+    margin: 25px 0;
 }
 
 .nav button {
-    padding: 14px 22px;
-    font-size: 18px;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
-    border-radius: 12px;
-    border: none;
-    background: #0f0f0f;
-    color: white;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
-    transition: transform 0.2s, background 0.3s;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    background: #1e293b;
+    color: #f1f5f9;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
 }
 
 .nav button:hover {
-    background: #017bb8;
-    transform: translateY(-2px);
+    background: #334155;
+    border-color: #475569;
+    transform: translateY(-1px);
+}
+
+#mesActual {
+    font-size: 1.4em;
+    font-weight: 700;
+    color: #f8fafc;
+    min-width: 150px;
+    text-align: center;
 }
 
 /* ------------------ Semana ------------------ */
 .semana { 
     display: grid; 
     grid-template-columns: repeat(7, 1fr); 
-    font-weight: bold; 
+    font-weight: 700; 
     margin: 0 10px; 
     text-align: center; 
-    color: #f8f7f7; 
-    font-size: 1.3em; 
+    color: #94a3b8; /* Gris suave para los días de la semana */
+    font-size: 1.1em; 
 }
-.semana div { padding: 12px 0; }
+.semana div { padding: 10px 0; }
 
 /* ------------------ Calendario ------------------ */
 #calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 8px;
-    padding: 10px;
+    gap: 10px;
+    padding: 15px;
 }
 
+/* Las casillas por defecto del mes */
 .day {
-    background: #000000cc;
+    position: relative;
+    background: #1e293b; /* 🌟 MI DISEÑO: Gris oscuro azulado para días vacíos */
     cursor: pointer;
-    border-radius: 14px;
-    min-height: 100px;
-    font-size: 1.3em;
+    border-radius: 12px;
+    min-height: 95px;
+    font-size: 1.4em; /* Número grande */
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
-    transition: transform 0.2s, box-shadow 0.3s, background 0.3s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    transition: all 0.2s ease;
     padding: 5px;
     box-sizing: border-box;
     white-space: pre-line;
+    
+    /* Contraste Radical para el Número */
+    color: #ffffff !important;
+    font-weight: 700 !important;
 }
 
 .day:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 10px rgba(0,0,0,0.25);
+    transform: translateY(-2px);
+    background: #25334a;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
 }
 
-/* ------------------ Colores por tipo de día (Legibilidad Optimizada) ------------------ */
-.normal { background: #FFD966; color: #000; }
-.vacaciones { background: #7CFC8A; color: #000; }
-.festivo { background: #4DA6FF; color: #000; } /* Cambiado a negro para mayor contraste */
-.festivo-trabajado { background: #FF5C5C; color: #fff; }
-.urbano { background: #A569BD; color: white; }
+/* ------------------ Mi Paleta de Colores Inteligente ------------------ */
+.normal { 
+    background-color: #1e3a8a !important; /* Azul Eléctrico Profundo */
+    color: #ffffff !important; 
+    border-bottom: 4px solid #3b82f6; 
+}
+.vacaciones { 
+    background-color: #064e3b !important; /* Verde Bosque Nocturno */
+    color: #34d399 !important; /* Texto Esmeralda Brillante */
+}
+.festivo { 
+    background-color: #581c87 !important; /* Púrpura Real */
+    color: #f1f5f9 !important;
+    border-bottom: 4px solid #a855f7;
+}
+.festivo-trabajado { 
+    background-color: #78350f !important; /* Óxido / Cobre Oscuro */
+    color: #fbbf24 !important; /* Texto Ámbar */
+    border-bottom: 4px solid #f59e0b; 
+}
+.urbano { 
+    background-color: #334155 !important; /* Gris Pizarra */
+    color: #f1f5f9 !important; 
+    border-bottom: 4px solid #94a3b8; 
+}
 
-/* ------------------ Formulario Estilo Bottom Sheet para Móviles ------------------ */
+/* Días vacíos fuera de rango */
+.day:empty {
+    background-color: rgba(255, 255, 255, 0.01) !important;
+    border: 1px dashed rgba(255, 255, 255, 0.03) !important;
+    box-shadow: none;
+    pointer-events: none;
+}
+
+/* Destacar el Día Actual (Alta Visibilidad Neón) */
+.day.hoy-actual {
+    border: 2px solid #f97316 !important; /* Naranja Puro */
+    box-shadow: 0 0 15px rgba(249, 115, 22, 0.4) !important;
+    background: #0f172a !important;
+}
+
+/* Indicador de Notas */
+.indicador-nota {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    font-size: 0.6em;
+}
+
+/* ------------------ Formulario Estilo Bottom Sheet ------------------ */
 #formulario {
     position: fixed;
     bottom: 0;
     left: 0;
     width: 100%;
     max-width: 100%;
-    background: #121212f4;
+    background: #0f172afc; /* Fondo oscuro liso */
     padding: 25px 20px 40px 20px;
     border-radius: 24px 24px 0 0;
-    box-shadow: 0 -5px 25px rgba(0,0,0,0.5);
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.6);
     font-size: 1.1em;
     z-index: 100;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(15px);
     box-sizing: border-box;
     max-height: 85vh;
     overflow-y: auto;
     transition: transform 0.3s ease-out;
+    border-top: 1px solid #334155;
 }
 
-/* Manejo de visibilidad con transición animada hacia abajo */
 #formulario.hidden {
     display: block !important;
     transform: translateY(100%);
 }
 
-#formulario h2, #formulario h3 {
-    margin-top: 0;
-    color: #fff;
-}
+#formulario h2, #formulario h3 { margin-top: 0; color: #fff; font-weight: 700; }
+#formulario label { display: block; margin-top: 15px; font-weight: 600; color: #94a3b8; }
 
-#formulario label {
-    display: block;
-    margin-top: 15px;
-    font-weight: bold;
-}
-
-/* Evita el zoom automático molesto en móviles (fuente >= 16px) */
-#formulario input,
-#formulario select,
-#formulario textarea {
+#formulario input, #formulario select, #formulario textarea {
     display: block;
     width: 100%;
     margin: 10px 0;
     font-size: 16px !important;
     padding: 12px;
     border-radius: 10px;
-    border: 1px solid #333;
-    background-color: #1e1e1e;
-    color: #f3f2f2;
+    border: 1px solid #334155;
+    background-color: #1e293b;
+    color: #f8fafc;
     box-sizing: border-box;
 }
 
-/* Rejilla de botones táctiles táctiles */
+/* Rejilla de botones */
 .grid-botones {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 15px;
+    gap: 12px;
+    margin-top: 20px;
 }
 
 #formulario button {
     padding: 16px;
     font-size: 1em;
-    font-weight: bold;
+    font-weight: 700;
     border-radius: 12px;
     border: none;
     cursor: pointer;
     color: white;
     box-sizing: border-box;
-    transition: background 0.3s, transform 0.1s;
+    transition: all 0.2s;
 }
 
-#formulario button:active {
-    transform: scale(0.98);
-}
+#formulario button:active { transform: scale(0.97); }
 
-.btn-entrada { background: #2e7d32; }
-.btn-salida { background: #1565c0; }
-.btn-eliminar { background: #c62828; }
-.btn-cancelar { background: #424242; }
-.btn-guardar { background: #f57c00; grid-column: span 2; } /* Botón ancho entero abajo */
+.btn-entrada { background: #16a34a; }
+.btn-entrada:hover { background: #15803d; }
+.btn-salida { background: #2563eb; }
+.btn-salida:hover { background: #1d4ed8; }
+.btn-eliminar { background: #dc2626; }
+.btn-eliminar:hover { background: #b91c1c; }
+.btn-cancelar { background: #475569; }
+.btn-cancelar:hover { background: #334155; }
+.btn-guardar { background: #ea580c; grid-column: span 2; }
+.btn-guardar:hover { background: #c2410c; }
 
 .hidden { display: none !important; }
 
-/* ------------------ Resumen mensual en Grid Responsivo ------------------ */
+/* ------------------ Resumen mensual ------------------ */
 #resumen {
-    margin: 20px;
+    margin: 25px 20px;
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 16px;
+    gap: 20px;
 }
 
 .mes-card {
-    background: #0e0d0dcc;
-    padding: 20px;
-    border-radius: 14px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    background: #1e293b;
+    padding: 22px;
+    border-radius: 16px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     text-align: left;
-    border-left: 5px solid #017bb8;
+    border-top: 4px solid #3b82f6; /* Línea de diseño arriba */
 }
 
-.mes-card h3 {
-    margin-top: 0;
-    margin-bottom: 12px;
-    font-size: 1.4em;
-    color: #03a9f4;
-}
-
+.mes-card h3 { margin-top: 0; margin-bottom: 15px; font-size: 1.3em; color: #3b82f6; font-weight: 700; }
 .mes-card .dato {
     display: flex;
     justify-content: space-between;
-    padding: 6px 0;
-    font-size: 1.1em;
-    border-bottom: 1px solid #222;
+    padding: 8px 0;
+    font-size: 1.05em;
+    border-bottom: 1px solid #334155;
+    color: #cbd5e1;
 }
+.mes-card .dato:last-child { border-bottom: none; }
 
-.mes-card .dato:last-child {
-    border-bottom: none;
-}
-
-/* ------------------ Ajustes Estrictos para Teléfonos Móviles ------------------ */
+/* ------------------ Ajustes Móviles ------------------ */
 @media(max-width: 480px) {
-    .header { padding: 12px; }
-    .header h1 { font-size: 1.4em; }
+    .header { padding: 15px 12px; }
+    .header h1 { font-size: 1.5em; }
     .logo { width: 45px; }
-
-    .nav button { padding: 10px 16px; font-size: 15px; }
-    #mesActual { font-size: 1.2em; }
-
-    .semana { font-size: 1em; margin: 0 5px; }
-    .semana div { padding: 6px 0; }
-
-    #calendar { gap: 4px; padding: 5px; }
-    .day { min-height: 80px; font-size: 0.9em; border-radius: 10px; padding: 4px; }
+    .nav button { padding: 10px 14px; font-size: 14px; }
+    #mesActual { font-size: 1.1em; }
+    .semana { font-size: 0.95em; }
+    #calendar { gap: 6px; padding: 8px; }
+    .day { min-height: 75px; font-size: 1.1em; border-radius: 10px; }
+    .indicador-nota { top: 3px; right: 5px; font-size: 0.55em; }
 }
