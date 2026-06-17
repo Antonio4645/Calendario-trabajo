@@ -14,7 +14,6 @@ let fechaActual = "";
 
 const nombresMes = ["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"];
 
-// ------------------ Calendario ------------------
 // ------------------ Calendario Actualizado ------------------
 function generarCalendario(){
     calendar.innerHTML="";
@@ -130,6 +129,7 @@ function ficharEntrada(){
     datos.nota = notasInput.value||"";
     localStorage.setItem(fechaActual,JSON.stringify(datos));
     
+    guardarCopiaAutomatica(); // 🌟 Autoguardado invisible activado
     generarCalendario();
     abrirFormulario(fechaActual); // Recarga la lista en pantalla de manera fluida sin cerrar
 }
@@ -169,6 +169,8 @@ function ficharSalida(){
 
     datos.nota = notasInput.value||"";
     localStorage.setItem(fechaActual,JSON.stringify(datos));
+    
+    guardarCopiaAutomatica(); // 🌟 Autoguardado invisible activado
     generarCalendario();
     cerrar(); 
 }
@@ -179,37 +181,43 @@ function guardarTipo(){
     datos.tipo = tipoSelect.value;
     datos.nota = notasInput.value||"";
     localStorage.setItem(fechaActual,JSON.stringify(datos));
+    
+    guardarCopiaAutomatica(); // 🌟 Autoguardado invisible activado
     generarCalendario();
     cerrar();
 }
 
-// ------------------ Mejora: Autocompletado de Jornada Urbana ------------------
+// ------------------ Autocompletado de Jornada Urbana ------------------
 function aplicarUrbanoAutomatico() {
     if (!fechaActual) return;
 
-    // 1. Definimos el turno fijo de urbano (07:30 a 15:00)
+    // 1. Definimos el turno fijo de urbano (07:15 a 15:15)
     let turnoUrbano = {
-        entrada: "07:30",
-        salida: "15:00"
+        entrada: "07:15",
+        salida: "15:15"
     };
 
     // 2. Estructuramos los datos del día directamente
     const datosDia = {
-        tipo: "urbano", // Aplica el tipo urbano para que pinte el color gris slate corporativo
-        nota: notasInput.value || "", // Preserva la nota si habías escrito algo antes
+        tipo: "urbano", 
+        nota: notasInput.value || "", 
         turnos: [turnoUrbano],
-        horas: "7h 30m" // Total de minutos calculado directamente (450 minutos)
+        horas: "8h 00m" 
     };
 
-    // 3. Guardamos en el almacenamiento local, refrescamos el calendario y cerramos
+    // 3. Guardamos en el almacenamiento local, hacemos backup, refrescamos y cerramos
     localStorage.setItem(fechaActual, JSON.stringify(datosDia));
+    
+    guardarCopiaAutomatica(); // 🌟 Autoguardado invisible activado
     generarCalendario();
     cerrar();
 }
 
+
 // ------------------ Eliminar día ------------------
 function eliminarDia(){
     localStorage.removeItem(fechaActual);
+    // ❌ Quitamos la línea de guardarCopiaAutomatica() para que la caja fuerte NO sepa que lo has borrado
     generarCalendario();
     cerrar();
 }
@@ -267,42 +275,39 @@ function mostrarResumen(){
         </div>`;
     }
     
-    // Primero renderizamos las tarjetas de los meses en su cuadrícula
     resumenDiv.innerHTML = html;
 
-    // 🌟 ARREGLO MÓVIL: Buscamos si ya existe el botón en la página para no duplicarlo
+    // ARREGLO MÓVIL: Evitamos que se dupliquen los botones en pantalla al refrescar
     let botonExistente = document.getElementById("btnExportarExcel");
     if (botonExistente) botonExistente.remove();
 
-    // Si hay datos guardados, creamos el botón FUERA de la cuadrícula conflictiva
+    // Si hay datos guardados, montamos la estructura integrada con los botones de Copia Avanzada
     if(html !== "") {
         let contenedorBoton = document.createElement("div");
         contenedorBoton.id = "btnExportarExcel";
-        contenedorBoton.style.cssText = "text-align: center; margin: 30px auto; width: 90%; max-width: 350px; clear: both;";
+        contenedorBoton.style.cssText = "text-align: center; margin: 30px auto; width: 90%; max-width: 400px; display: flex; flex-direction: column; gap: 12px; clear: both;";
         
         contenedorBoton.innerHTML = `
-            <button onclick="exportarAExcel()" style="
-                width: 100%;
-                background: #16a34a; 
-                color: white; 
-                border: none; 
-                padding: 16px 20px; 
-                font-size: 1.1em; 
-                font-weight: bold; 
-                border-radius: 12px; 
-                cursor: pointer; 
-                box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-                transition: background 0.2s;
-                -webkit-appearance: none;">
+            <button onclick="exportarAExcel()" style="width: 100%; background: #16a34a; color: white; border: none; padding: 15px; font-size: 1.05em; font-weight: bold; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); transition: background 0.2s; -webkit-appearance: none;">
                 📥 Exportar Historial a Excel
-            </button>`;
+            </button>
             
-        // Insertamos el botón justo después del bloque de los meses, libre de problemas de rejilla
+            <div style="display: flex; gap: 10px; width: 100%;">
+                <button onclick="restaurarCopiaAutomatica()" style="flex: 1; background: #334155; color: white; border: 1px solid #475569; padding: 12px; font-size: 0.9em; font-weight: bold; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                    🔄 Usar Autoguardado
+                </button>
+                <button onclick="crearCopiaSeguridad()" style="flex: 1; background: #1e293b; color: #cbd5e1; border: 1px solid #334155; padding: 12px; font-size: 0.9em; font-weight: bold; border-radius: 10px; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.2);">
+                    🛡️ Descargar Archivo
+                </button>
+            </div>
+            <input type="file" id="inputBackup" style="display:none;" accept=".json" onchange="restaurarCopiaSeguridad(this)">
+        `;
+            
         resumenDiv.parentNode.insertBefore(contenedorBoton, resumenDiv.nextSibling);
     }
 }
 
-// 🌟 NUEVA FUNCIÓN: Genera y descarga el archivo Excel (CSV) compatible
+// Genera y descarga el archivo Excel (CSV) compatible
 function exportarAExcel() {
     let contenidoCSV = "Fecha;Tipo de Dia;Horas Totales;Turnos Fichados;Notas\n";
     
@@ -333,7 +338,6 @@ function exportarAExcel() {
         contenidoCSV += `${fecha};${tipo.toUpperCase()};${horas};${turnosTexto};${nota}\n`;
     });
 
-    // Crear el archivo con cabecera UTF-8 BOM para que Excel abra las tildes y caracteres correctamente
     let blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), contenidoCSV], { type: "text/csv;charset=utf-8;" });
     let link = document.createElement("a");
     
@@ -347,19 +351,102 @@ function exportarAExcel() {
     document.body.removeChild(link);
 }
 
+// ------------------ SISTEMA DE COPIA DE SEGURIDAD AUTOMÁTICA E INVISIBLE ------------------
+
+// 1. Almacena en silencio un duplicado exacto de las horas en otra sección del disco duro local
+function guardarCopiaAutomatica() {
+    let datosApp = {};
+    for (let i = 0; i < localStorage.length; i++) {
+        let clave = localStorage.key(i);
+        if (/^\d{4}-\d{2}-\d{2}$/.test(clave)) {
+            datosApp[clave] = localStorage.getItem(clave);
+        }
+    }
+    
+    if (Object.keys(datosApp).length > 0) {
+        localStorage.setItem('backup_automatico_interno', JSON.stringify(datosApp));
+        console.log("🔒 Copia de seguridad automática actualizada en segundo plano.");
+    }
+}
+
+// 2. Extrae las horas duplicadas de la zona oculta en caso de emergencia
+function restaurarCopiaAutomatica() {
+    const backup = localStorage.getItem('backup_automatico_interno');
+    
+    if (!backup) {
+        alert("Aún no hay ninguna copia automática grabada en la memoria.");
+        return;
+    }
+
+    if (confirm("⚠️ ¿Quieres restaurar tu último autoguardado de seguridad? Recuperará todo tu registro al instante.")) {
+        const datosImportados = JSON.parse(backup);
+        
+        Object.keys(datosImportados).forEach(clave => {
+            localStorage.setItem(clave, datosImportados[clave]);
+        });
+        
+        alert("🔄 ¡Historial de fichajes restablecido con éxito!");
+        window.location.reload();
+    }
+}
+
+// 3. Permite descargar manualmente un archivo rígido (.json) fuera del dispositivo
+function crearCopiaSeguridad() {
+    let datosApp = {};
+    for (let i = 0; i < localStorage.length; i++) {
+        let clave = localStorage.key(i);
+        if (/^\d{4}-\d{2}-\d{2}$/.test(clave)) {
+            datosApp[clave] = localStorage.getItem(clave);
+        }
+    }
+
+    if (Object.keys(datosApp).length === 0) {
+        alert("No hay ningún dato en el calendario que exportar.");
+        return;
+    }
+
+    let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(datosApp));
+    let downloadAnchor = document.createElement('a');
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `Copia_Manual_Fichajes.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+}
+
+// 4. Permite arrastrar un archivo .json guardado en PC o Drive para restaurar en teléfonos nuevos
+function restaurarCopiaSeguridad(input) {
+    const archivo = input.files[0];
+    if (!archivo) return;
+
+    const lector = new FileReader();
+    lector.onload = function(e) {
+        try {
+            const datosImportados = JSON.parse(e.target.result);
+            if (confirm("¿Quieres inyectar esta copia de archivo? Se añadirá a tu calendario activo.")) {
+                Object.keys(datosImportados).forEach(clave => {
+                    localStorage.setItem(clave, datosImportados[clave]);
+                });
+                alert("¡Copia externa leída y cargada correctamente!");
+                window.location.reload();
+            }
+        } catch (error) {
+            alert("Error: El archivo suministrado no contiene una estructura válida.");
+        }
+    };
+    lector.readAsText(archivo);
+}
+
 // ------------------ Inicializar ------------------
 generarCalendario();
 
 // ------------------ Registro de Service Worker Inteligente ------------------
 if ("serviceWorker" in navigator) {
-    // Detectamos si estás en el ordenador (Live Server)
     const esLocal = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
     
     if (esLocal) {
-        // SI ESTÁS EN EL PC: No registramos nada para que nunca más te dé error 404 ni congele los colores
         console.log("Modo desarrollo local activo: Service Worker desactivado para evitar caché.");
     } else {
-        // SI ESTÁS EN GITHUB (INTERNET REAL): Aquí sí funciona perfecto
         navigator.serviceWorker.register("service-worker.js")
         .then(reg => {
             console.log("Service Worker registrado en producción:", reg.scope);

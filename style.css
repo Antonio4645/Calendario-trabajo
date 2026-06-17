@@ -83,12 +83,12 @@ body {
     padding: 15px;
 }
 
-/* Las casillas por defecto del mes */
+/* 🌟 MEJORA: Las casillas por defecto del mes con relieve premium */
 .day {
     position: relative;
-    background: #1e293b; /* 🌟 MI DISEÑO: Gris oscuro azulado para días vacíos */
+    background: #1e293b; /* Gris oscuro azulado para días vacíos */
     cursor: pointer;
-    border-radius: 12px;
+    border-radius: 14px; /* Esquinas ligeramente más suaves y modernas */
     min-height: 95px;
     font-size: 1.4em; /* Número grande */
     display: flex;
@@ -96,8 +96,6 @@ body {
     justify-content: center;
     align-items: center;
     text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
-    transition: all 0.2s ease;
     padding: 5px;
     box-sizing: border-box;
     white-space: pre-line;
@@ -105,12 +103,24 @@ body {
     /* Contraste Radical para el Número */
     color: #ffffff !important;
     font-weight: 700 !important;
+
+    /* 🛡️ Efecto Sombra de Relieve Flotante en Capas (Gama Alta) */
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    /* Transición amortiguada ideal para gestos táctiles en pantallas móviles */
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
+/* 🌟 MEJORA: Elevación física al pasar el puntero (PC) */
 .day:hover {
-    transform: translateY(-2px);
+    transform: translateY(-4px);
     background: #25334a;
-    box-shadow: 0 6px 12px rgba(0,0,0,0.3);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* 🌟 MEJORA: Sensación de clic mecánico al pulsar con el dedo (Móvil) */
+.day:active {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 /* ------------------ Mi Paleta de Colores Inteligente ------------------ */
@@ -150,7 +160,7 @@ body {
 /* Destacar el Día Actual (Alta Visibilidad Neón) */
 .day.hoy-actual {
     border: 2px solid #f97316 !important; /* Naranja Puro */
-    box-shadow: 0 0 15px rgba(249, 115, 22, 0.4) !important;
+    box-shadow: 0 0 15px rgba(249, 115, 22, 0.5) !important;
     background: #0f172a !important;
 }
 
@@ -247,13 +257,16 @@ body {
     gap: 20px;
 }
 
+/* 🌟 MEJORA: Tarjetas de resumen con esquinas suavizadas y profundidad 3D */
 .mes-card {
     background: #1e293b;
-    padding: 22px;
-    border-radius: 16px;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    padding: 24px; /* Un pelín más de aire interno */
+    border-radius: 16px; /* Bordes redondeados premium */
     text-align: left;
-    border-top: 4px solid #3b82f6; /* Línea de diseño arriba */
+    border-top: 5px solid #3b82f6; /* Línea decorativa superior sutilmente más gruesa */
+    
+    /* Sombra difusa multicapa para separarlo con estilo del fondo de la app */
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
 }
 
 .mes-card h3 { margin-top: 0; margin-bottom: 15px; font-size: 1.3em; color: #3b82f6; font-weight: 700; }
@@ -276,6 +289,15 @@ body {
     #mesActual { font-size: 1.1em; }
     .semana { font-size: 0.95em; }
     #calendar { gap: 6px; padding: 8px; }
-    .day { min-height: 75px; font-size: 1.1em; border-radius: 10px; }
+    /* Ajustes táctiles refinados para móviles */
+    .day { 
+        min-height: 75px; 
+        font-size: 1.1em; 
+        border-radius: 10px; 
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .day:hover {
+        transform: translateY(-2px); /* Menos agresivo el hover en móvil */
+    }
     .indicador-nota { top: 3px; right: 5px; font-size: 0.55em; }
 }
