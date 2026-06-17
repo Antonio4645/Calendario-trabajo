@@ -1,10 +1,11 @@
-/* ------------------ CSS Profesional y Moderno ------------------ */
+/* ------------------ CSS Profesional y Mobile-First ------------------ */
 body {
     font-family: 'Segoe UI', Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background: linear-gradient(to bottom, #017bb8, #012152); /* Azul lineal */
+    background: linear-gradient(to bottom, #017bb8, #012152);
     color: #f8f7f7;
+    min-height: 100vh;
 }
 
 /* ------------------ Header ------------------ */
@@ -12,7 +13,7 @@ body {
     display: flex;
     align-items: center;
     padding: 20px;
-    background: #014d7a; /* Azul más intenso */
+    background: #014d7a;
     color: white;
     box-shadow: 0 4px 6px rgba(0,0,0,0.2);
     position: sticky;
@@ -55,8 +56,8 @@ body {
     grid-template-columns: repeat(7, 1fr); 
     font-weight: bold; 
     margin: 0 10px; 
-    text-align:center; 
-    color:#f8f7f7; 
+    text-align: center; 
+    color: #f8f7f7; 
     font-size: 1.3em; 
 }
 .semana div { padding: 12px 0; }
@@ -70,19 +71,21 @@ body {
 }
 
 .day {
-    background: #000000cc; /* Fondo negro por defecto */
+    background: #000000cc;
     cursor: pointer;
     border-radius: 14px;
     min-height: 100px;
-    font-size: 2em; 
+    font-size: 1.3em;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
-    box-shadow: 0 3px 6px rgba(248, 1, 1, 0.15);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
     transition: transform 0.2s, box-shadow 0.3s, background 0.3s;
-    padding: 0;
+    padding: 5px;
+    box-sizing: border-box;
+    white-space: pre-line;
 }
 
 .day:hover {
@@ -90,113 +93,146 @@ body {
     box-shadow: 0 5px 10px rgba(0,0,0,0.25);
 }
 
-/* ------------------ Colores por tipo de día ------------------ */
-.normal { background: #FFD966; color:#000; }             /* Trabajo normal */
-.vacaciones { background: #7CFC8A; color:#000; }        /* Vacaciones */
-.festivo { background: #4DA6FF; color:#fff; }           /* Festivo */
-.festivo-trabajado { background: #FF5C5C; color:#fff; } /* Festivo trabajado */
-.urbano { background: #A569BD; color:white; }           /* Trabajo urbano */
+/* ------------------ Colores por tipo de día (Legibilidad Optimizada) ------------------ */
+.normal { background: #FFD966; color: #000; }
+.vacaciones { background: #7CFC8A; color: #000; }
+.festivo { background: #4DA6FF; color: #000; } /* Cambiado a negro para mayor contraste */
+.festivo-trabajado { background: #FF5C5C; color: #fff; }
+.urbano { background: #A569BD; color: white; }
 
-/* ------------------ Formulario ------------------ */
+/* ------------------ Formulario Estilo Bottom Sheet para Móviles ------------------ */
 #formulario {
     position: fixed;
-    top: 50%;
-    left:50%;
-    transform: translate(-50%, -50%);
-    background: #020202ee; /* fondo semitransparente */
-    padding: 35px;
-    border-radius: 20px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    width: 90%;
-    max-width: 500px;
-    font-size: 1.3em;
-}
-#tipo{
-    background-color: #000;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    max-width: 100%;
+    background: #121212f4;
+    padding: 25px 20px 40px 20px;
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -5px 25px rgba(0,0,0,0.5);
+    font-size: 1.1em;
+    z-index: 100;
+    backdrop-filter: blur(10px);
+    box-sizing: border-box;
+    max-height: 85vh;
+    overflow-y: auto;
+    transition: transform 0.3s ease-out;
 }
 
-#formulario label,
+/* Manejo de visibilidad con transición animada hacia abajo */
+#formulario.hidden {
+    display: block !important;
+    transform: translateY(100%);
+}
+
+#formulario h2, #formulario h3 {
+    margin-top: 0;
+    color: #fff;
+}
+
+#formulario label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+}
+
+/* Evita el zoom automático molesto en móviles (fuente >= 16px) */
 #formulario input,
 #formulario select,
 #formulario textarea {
-    display:block;
-    width:100%;
-    margin:10px 0;
-    font-size:1.4em;
-    padding:8px;
-    border-radius:6px;
-    border:1px solid #ccc;
-    color: #f3f2f2; /* texto visible sobre fondo claro */
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    font-size: 16px !important;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #333;
+    background-color: #1e1e1e;
+    color: #f3f2f2;
+    box-sizing: border-box;
 }
-#notas{
-    background-color: #000;
+
+/* Rejilla de botones táctiles táctiles */
+.grid-botones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 15px;
 }
 
 #formulario button {
-    margin-top:14px;
-    padding:16px;
-    font-size:1.25em;
-    width:100%;
-    border-radius:12px;
-    border:none;
-    cursor:pointer;
-    background:#046ea3;
-    color:white;
-    box-shadow:0 3px 6px rgba(0,0,0,0.2);
-    transition:background 0.3s, transform 0.2s;
+    padding: 16px;
+    font-size: 1em;
+    font-weight: bold;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    box-sizing: border-box;
+    transition: background 0.3s, transform 0.1s;
 }
 
-#formulario button:hover {
-    background:#03a9f4;
-    transform:translateY(-2px);
+#formulario button:active {
+    transform: scale(0.98);
 }
 
-.hidden { display:none; }
+.btn-entrada { background: #2e7d32; }
+.btn-salida { background: #1565c0; }
+.btn-eliminar { background: #c62828; }
+.btn-cancelar { background: #424242; }
+.btn-guardar { background: #f57c00; grid-column: span 2; } /* Botón ancho entero abajo */
 
-/* ------------------ Resumen mensual ------------------ */
+.hidden { display: none !important; }
+
+/* ------------------ Resumen mensual en Grid Responsivo ------------------ */
 #resumen {
     margin: 20px;
-    display:flex;
-    flex-direction:column;
-    gap:14px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
 }
 
 .mes-card {
     background: #0e0d0dcc;
     padding: 20px;
     border-radius: 14px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-    text-align:left;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    text-align: left;
+    border-left: 5px solid #017bb8;
 }
 
 .mes-card h3 {
-    margin-top:0;
-    margin-bottom:12px;
-    font-size:1.7em;
+    margin-top: 0;
+    margin-bottom: 12px;
+    font-size: 1.4em;
+    color: #03a9f4;
 }
 
 .mes-card .dato {
-    display:flex;
-    justify-content:space-between;
-    padding:5px 0;
-    font-size:1.7em;
+    display: flex;
+    justify-content: space-between;
+    padding: 6px 0;
+    font-size: 1.1em;
+    border-bottom: 1px solid #222;
 }
 
-/* ------------------ Móvil ------------------ */
-@media(max-width:500px){
-    .day { font-size:2em; min-height:90px; padding:0; }
-    .nav button { font-size:16px; padding:12px 18px; }
-    .header h1 { font-size:1.6em; }
+.mes-card .dato:last-child {
+    border-bottom: none;
+}
 
-    #formulario {
-        width:95%;
-        font-size:1.5em;
-        padding:30px;
-        max-width:480px;
-    }
-    #formulario label,
-    #formulario input,
-    #formulario select,
-    #formulario textarea { font-size:1.2em; }
-    #formulario button { font-size:1.2em; padding:14px; }
+/* ------------------ Ajustes Estrictos para Teléfonos Móviles ------------------ */
+@media(max-width: 480px) {
+    .header { padding: 12px; }
+    .header h1 { font-size: 1.4em; }
+    .logo { width: 45px; }
+
+    .nav button { padding: 10px 16px; font-size: 15px; }
+    #mesActual { font-size: 1.2em; }
+
+    .semana { font-size: 1em; margin: 0 5px; }
+    .semana div { padding: 6px 0; }
+
+    #calendar { gap: 4px; padding: 5px; }
+    .day { min-height: 80px; font-size: 0.9em; border-radius: 10px; padding: 4px; }
 }

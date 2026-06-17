@@ -1,12 +1,12 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-
-<title>Mi Calendario de Trabajo</title>
-<link rel="stylesheet" href="style.css">
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#4CAF50">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mi Calendario de Trabajo</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#4CAF50">
 </head>
 <body>
 
@@ -27,7 +27,6 @@
 
 <div id="calendar"></div>
 
-<!-- Formulario -->
 <div id="formulario" class="hidden">
     <h2 id="fechaSeleccionada"></h2>
 
@@ -45,14 +44,15 @@
     <label>Notas:</label>
     <textarea id="notas" rows="3" placeholder="Escribe aquí tus notas..."></textarea>
 
-    <button onclick="ficharEntrada()">Fichar Entrada</button>
-    <button onclick="ficharSalida()">Fichar Salida</button>
-    <button onclick="guardarTipo()">Guardar Tipo/Nota</button>
-    <button onclick="eliminarDia()">Eliminar Día</button>
-    <button onclick="cerrar()">Cancelar</button>
+    <div class="grid-botones">
+        <button class="btn-entrada" onclick="ficharEntrada()">Entrada</button>
+        <button class="btn-salida" onclick="ficharSalida()">Salida</button>
+        <button class="btn-eliminar" onclick="eliminarDia()">Borrar Día</button>
+        <button class="btn-cancelar" onclick="cerrar()">Cerrar</button>
+        <button class="btn-guardar" onclick="guardarTipo()">Guardar Tipo/Nota</button>
+    </div>
 </div>
 
-<!-- Resumen -->
 <div id="resumen"></div>
 
 <script src="app.js"></script>

@@ -5,6 +5,7 @@ const fechaSeleccionada = document.getElementById("fechaSeleccionada");
 const tipoSelect = document.getElementById("tipo");
 const resumenDiv = document.getElementById("resumen");
 const notasInput = document.getElementById("notas");
+const listaTurnos = document.getElementById("listaTurnos");
 
 let hoy = new Date();
 let mes = hoy.getMonth();
@@ -41,7 +42,6 @@ function generarCalendario(){
                     datos.tipo==="festivo"?"F":
                     datos.tipo==="festivo-trabajado"?"FT":
                     datos.tipo==="urbano"?"TU":"";
-            // Horas totales del día
             if(datos.horas) letra+=" ("+datos.horas+")";
         }
 
@@ -49,7 +49,6 @@ function generarCalendario(){
         div.onclick=()=>abrirFormulario(fecha);
         calendar.appendChild(div);
     }
-
     mostrarResumen();
 }
 
@@ -65,34 +64,25 @@ function abrirFormulario(fecha){
     tipoSelect.value=datos?datos.tipo:"normal";
     notasInput.value=datos?datos.nota||"":"";
 
-    // Mostrar detalle de turnos
-    let turnosDetalle = document.getElementById("turnosDetalle");
-    if(!turnosDetalle){
-        turnosDetalle = document.createElement("div");
-        turnosDetalle.id = "turnosDetalle";
-        turnosDetalle.style.marginTop = "10px";
-        turnosDetalle.style.fontSize = "1em";
-        turnosDetalle.style.color = "#f8f7f7";
-        formulario.appendChild(turnosDetalle);
-    }
-
-    turnosDetalle.innerHTML = "<strong>Turnos del día:</strong><br>";
+    listaTurnos.innerHTML = "<strong>Turnos del día:</strong><br>";
     if(datos && datos.turnos && datos.turnos.length){
         datos.turnos.forEach((t,i)=>{
             if(t.entrada && t.salida){
-                // Calcular horas del turno
                 let [hE,mE] = t.entrada.split(":").map(Number);
                 let [hS,mS] = t.salida.split(":").map(Number);
+                
                 let minutos = (hS*60+mS)-(hE*60+mE);
+                if(minutos < 0) minutos += 1440; // FIX TURNO NOCTURNO (Cruzar medianoche)
+
                 let horas = Math.floor(minutos/60);
                 let mins = minutos % 60;
-                turnosDetalle.innerHTML += `T${i+1}: ${t.entrada} - ${t.salida} (${horas}h ${mins}m)<br>`;
+                listaTurnos.innerHTML += `T${i+1}: ${t.entrada} - ${t.salida} (${horas}h ${mins}m)<br>`;
             } else if(t.entrada && !t.salida){
-                turnosDetalle.innerHTML += `T${i+1}: ${t.entrada} - ...<br>`;
+                listaTurnos.innerHTML += `T${i+1}: ${t.entrada} - ...<br>`;
             }
         });
     } else {
-        turnosDetalle.innerHTML += "No hay turnos fichados aún.";
+        listaTurnos.innerHTML += "No hay turnos fichados aún.";
     }
 }
 
@@ -117,8 +107,9 @@ function ficharEntrada(){
     datos.tipo = datos.tipo||"normal";
     datos.nota = notasInput.value||"";
     localStorage.setItem(fechaActual,JSON.stringify(datos));
+    
     generarCalendario();
-    cerrar(); // cierra el formulario al fichar
+    abrirFormulario(fechaActual); // Recarga la lista en pantalla de manera fluida sin cerrar
 }
 
 // ------------------ Fichar Salida ------------------
@@ -139,13 +130,15 @@ function ficharSalida(){
     let horaSalida = now.toLocaleTimeString('es-ES',{hour:'2-digit',minute:'2-digit'});
     ultimoTurno.salida = horaSalida;
 
-    // Calcular horas totales del día
     let totalMinutos = 0;
     datos.turnos.forEach(turno=>{
         if(turno.entrada && turno.salida){
             let [hE,mE] = turno.entrada.split(":").map(Number);
             let [hS,mS] = turno.salida.split(":").map(Number);
-            totalMinutos += (hS*60+mS)-(hE*60+mE);
+            
+            let dif = (hS*60+mS)-(hE*60+mE);
+            if(dif < 0) dif += 1440; // FIX TURNO NOCTURNO (Cruzar medianoche)
+            totalMinutos += dif;
         }
     });
     let horas = Math.floor(totalMinutos/60);
@@ -155,7 +148,7 @@ function ficharSalida(){
     datos.nota = notasInput.value||"";
     localStorage.setItem(fechaActual,JSON.stringify(datos));
     generarCalendario();
-    cerrar(); // cierra el formulario al fichar
+    cerrar(); 
 }
 
 // ------------------ Guardar tipo ------------------
