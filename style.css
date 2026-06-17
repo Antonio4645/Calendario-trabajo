@@ -1,5 +1,5 @@
 /* ==========================================================================
-   ESTILOS PREMIUM GRAPHITE - FIJACIÓN ABSOLUTA PARA MÓVIL (ANTI-DESBORDE)
+   ESTILOS PREMIUM GRAPHITE - FIJACIÓN ABSOLUTA ANTI-DESBORDAMIENTO (UNIVERSAL)
    ========================================================================== */
 
 * {
@@ -18,7 +18,12 @@ body {
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
-    overflow-x: hidden; /* Bloqueo garantizado de barra horizontal */
+    overflow-x: hidden; /* Prohibido generar desplazamiento horizontal */
+}
+
+/* 🚨 DETECTOR ULTRA-DEFENSIVO: Ningún elemento de la página puede ser más ancho que la pantalla */
+body * {
+    max-width: 100% !important;
 }
 
 /* 🏢 Cabecera (Logo y Título) */
@@ -67,17 +72,11 @@ body {
     border-radius: 8px;
     cursor: pointer;
     box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-    transition: background 0.2s;
-}
-
-.nav button:active {
-    background: #334155;
 }
 
 #mesActual {
     font-size: 1.15em;
     font-weight: 600;
-    text-align: center;
 }
 
 /* 📅 Letras de los días de la semana (L M X J V S D) */
@@ -112,7 +111,7 @@ body {
 /* Celdas de los Días individuales */
 .day {
     width: 100% !important;
-    min-width: 0 !important; /* Evita que el navegador estire las celdas a la fuerza */
+    min-width: 0 !important;
     aspect-ratio: 1; 
     background-color: #0f172a;
     border-radius: 8px;
@@ -129,16 +128,11 @@ body {
     color: #f1f5f9;
 }
 
-.day:active {
-    transform: scale(0.95);
-}
-
 /* Sábados y Domingos con el número atenuado */
 .day.fin-de-semana {
     color: #526173 !important;
 }
 
-/* Icono lápiz de notas */
 .indicador-nota {
     position: absolute;
     top: 2px;
@@ -146,14 +140,13 @@ body {
     font-size: 0.7em;
 }
 
-/* Resaltar día actual */
 .hoy-actual {
     border: 2px solid #38bdf8 !important;
     box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
 }
 
 /* ==========================================================================
-   COLORES DE LOS TURNOS (Tapan el atenuado al fichar)
+   COLORES DE LOS TURNOS
    ========================================================================== */
 .day.normal { background-color: #1e3a8a !important; color: #ffffff !important; border: none; }
 .day.vacaciones { background-color: #065f46 !important; color: #ffffff !important; border: none; }
@@ -162,7 +155,22 @@ body {
 .day.urbano { background-color: #475569 !important; color: #ffffff !important; border: none; }
 
 /* ==========================================================================
-   FORMULARIO FLOTANTE (ESTILO MODAL MEJORADO PARA PANTALLAS ESTRECHAS)
+   🚨 BLINDAJE PARA TODOS LOS BOTONES DE ABAJO (EXCEL, COPIAS, ETC)
+   ========================================================================== */
+button, .grid-botones, .grid-botones button, div[style*="grid"] {
+    max-width: 100% !important;
+    white-space: normal !important; /* Obliga a los textos largos a saltar de línea */
+    word-break: break-word !important;
+}
+
+/* Si tienes los botones de Excel metidos en divs o flexbox sueltos abajo */
+body > button, body > div {
+    width: 100%;
+    max-width: 400px !important;
+}
+
+/* ==========================================================================
+   FORMULARIO FLOTANTE (ESTILO MODAL INTERNO)
    ========================================================================== */
 #formulario {
     position: fixed;
@@ -181,35 +189,16 @@ body {
     display: none !important;
 }
 
-/* Forzar que todos los elementos internos se queden dentro del límite */
 #formulario h2, #formulario h3, #formulario label, #formulario select, #formulario textarea, #formulario .grid-botones, #formulario #listaTurnos {
     width: 100%;
     max-width: 350px !important;
 }
 
-#formulario h2 {
-    font-size: 1.25em;
-    color: #38bdf8;
-    margin-bottom: 8px;
-    text-align: center;
-}
+#formulario h2 { font-size: 1.25em; color: #38bdf8; margin-bottom: 8px; text-align: center; }
+#formulario h3 { font-size: 0.95em; color: #94a3b8; margin-top: 6px; margin-bottom: 4px; }
+#formulario label { font-size: 0.85em; color: #94a3b8; margin-top: 6px; margin-bottom: 2px; }
 
-#formulario h3 {
-    font-size: 0.95em;
-    color: #94a3b8;
-    margin-top: 6px;
-    margin-bottom: 4px;
-}
-
-#formulario label {
-    font-size: 0.85em;
-    color: #94a3b8;
-    margin-top: 6px;
-    margin-bottom: 2px;
-}
-
-#formulario select, 
-#formulario textarea {
+#formulario select, #formulario textarea {
     background: #0f172a;
     border: 1px solid #475569;
     color: #f8fafc;
@@ -219,23 +208,9 @@ body {
     margin-bottom: 6px;
 }
 
-#formulario textarea {
-    resize: none;
-    height: 50px;
-}
+#formulario textarea { resize: none; height: 50px; }
+#listaTurnos { background: #0f172a; padding: 10px; border-radius: 8px; font-size: 0.85em; border: 1px solid #334155; color: #cbd5e1; line-height: 1.4; margin-bottom: 6px; }
 
-#listaTurnos {
-    background: #0f172a;
-    padding: 10px;
-    border-radius: 8px;
-    font-size: 0.85em;
-    border: 1px solid #334155;
-    color: #cbd5e1;
-    line-height: 1.4;
-    margin-bottom: 6px;
-}
-
-/* 🚨 REJILLA DE BOTONES DEFENSIVA: Permite romper texto largo */
 .grid-botones {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -250,17 +225,8 @@ body {
     border: none;
     cursor: pointer;
     color: white;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.15);
-    -webkit-appearance: none;
-    white-space: normal !important; /* IMPORTANTE: Deja que el texto salte de línea si no cabe */
-    text-align: center;
 }
 
-.grid-botones button:active {
-    filter: brightness(0.85);
-}
-
-/* Clases específicas para tus botones */
 .btn-entrada { background: #2563eb !important; }
 .btn-salida { background: #dc2626 !important; }
 .btn-eliminar { background: #b91c1c !important; }
