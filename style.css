@@ -79,7 +79,7 @@ body {
     text-align: center;
 }
 
-/* 📅 Cabecera de los días de la semana (L M X J V S D) */
+/* 📅 CORRECCIÓN DEFENSIVA PARA EL MÓVIL (Días de la semana) */
 .semana {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -91,10 +91,10 @@ body {
     color: #94a3b8;
     font-size: 0.9em;
     margin-bottom: 8px;
-    padding: 0 10px;
+    padding: 0 10px; /* Alieación exacta con el interior del calendario */
 }
 
-/* Contenedor Cuadrícula del Calendario */
+/* 📅 CORRECCIÓN DEFENSIVA PARA EL MÓVIL (Cuadrícula del calendario) */
 #calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
@@ -106,6 +106,27 @@ body {
     border-radius: 16px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.4);
     border: 1px solid #334155;
+}
+
+/* 🚨 EL TRUCO MAGNÍFICO: Forzar a que las celdas nunca se estiren más que el contenedor */
+.day {
+    width: 100% !important;
+    min-width: 0 !important; /* Evita que el navegador ignore el tamaño del móvil */
+    aspect-ratio: 1;
+    background-color: #0f172a;
+    border-radius: 10px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-size: 0.85em;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid #1e293b;
+    transition: transform 0.1s, background-color 0.2s;
+    color: #f1f5f9;
 }
 
 /* Celdas de los Días */
