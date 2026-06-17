@@ -183,6 +183,30 @@ function guardarTipo(){
     cerrar();
 }
 
+// ------------------ Mejora: Autocompletado de Jornada Urbana ------------------
+function aplicarUrbanoAutomatico() {
+    if (!fechaActual) return;
+
+    // 1. Definimos el turno fijo de urbano (07:30 a 15:00)
+    let turnoUrbano = {
+        entrada: "07:30",
+        salida: "15:00"
+    };
+
+    // 2. Estructuramos los datos del día directamente
+    const datosDia = {
+        tipo: "urbano", // Aplica el tipo urbano para que pinte el color gris slate corporativo
+        nota: notasInput.value || "", // Preserva la nota si habías escrito algo antes
+        turnos: [turnoUrbano],
+        horas: "7h 30m" // Total de minutos calculado directamente (450 minutos)
+    };
+
+    // 3. Guardamos en el almacenamiento local, refrescamos el calendario y cerramos
+    localStorage.setItem(fechaActual, JSON.stringify(datosDia));
+    generarCalendario();
+    cerrar();
+}
+
 // ------------------ Eliminar día ------------------
 function eliminarDia(){
     localStorage.removeItem(fechaActual);
