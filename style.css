@@ -1,276 +1,350 @@
 /* ==========================================================================
-   ESTILOS PREMIUM GRAPHITE - FIJACIÓN ABSOLUTA ANTI-DESBORDAMIENTO (UNIVERSAL)
+   CSS Profesional y Mobile-First - VERSÍON PREMIUM UNIFICADA DEFINITIVA
    ========================================================================== */
 
-* {
-    box-sizing: border-box !important;
+body {
+    font-family: 'Segoe UI', Arial, sans-serif;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    -webkit-tap-highlight-color: transparent;
-}
-
-body {
-    background-color: #0f172a;
-    color: #f8fafc;
-    padding: 10px;
+    /* Fondo grafito ultra oscuro, relajante y premium */
+    background: linear-gradient(to bottom, #121824, #0a0d14);
+    color: #e2e8f0;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    min-height: 100vh;
-    overflow-x: hidden; /* Prohibido generar desplazamiento horizontal */
+    align-items: center; /* Centra todo el contenido de la app */
 }
 
-/* 🚨 DETECTOR ULTRA-DEFENSIVO: Ningún elemento de la página puede ser más ancho que la pantalla */
-body * {
-    max-width: 100% !important;
-}
-
-/* 🏢 Cabecera (Logo y Título) */
+/* ------------------ Header ------------------ */
 .header {
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    margin-top: 5px;
-    margin-bottom: 15px;
+    padding: 20px;
+    background: #1e293b;
+    color: white;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    border-bottom: 1px solid #334155;
     width: 100%;
-    max-width: 400px;
+    box-sizing: border-box;
 }
 
-.header img {
-    height: 32px !important;
-    width: auto !important;
-    object-fit: contain !important;
-    flex-shrink: 0;
+.logo { 
+    width: 70px; 
+    height: auto; 
+    margin-right: 15px; 
+    object-fit: contain;
 }
 
-.header h1 {
-    font-size: 1.2em;
-    font-weight: 600;
-    color: #f8fafc;
+.header h1 { 
+    font-size: 2em; 
+    margin: 0; 
+    font-weight: 700; 
+    letter-spacing: -0.5px; 
 }
 
-/* 🗺️ Barra de Navegación de Meses */
+/* ------------------ Navegación ------------------ */
 .nav {
     display: flex;
+    justify-content: center;
     align-items: center;
-    justify-content: space-between;
+    gap: 15px;
+    margin: 25px 0;
     width: 100%;
-    max-width: 400px;
-    margin-bottom: 15px;
-    padding: 0 4px;
+    max-width: 600px; /* Evita que los botones se dispersen demasiado */
+    padding: 0 10px;
+    box-sizing: border-box;
 }
 
 .nav button {
-    background: #1e293b;
-    border: 1px solid #334155;
-    color: #f8fafc;
-    padding: 8px 14px;
-    font-size: 0.9em;
-    font-weight: bold;
-    border-radius: 8px;
+    padding: 12px 20px;
+    font-size: 16px;
+    font-weight: 600;
     cursor: pointer;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    background: #1e293b;
+    color: #f1f5f9;
     box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    transition: all 0.2s ease;
+    flex-shrink: 0; /* Impide que los botones se achiquen o se deformen */
+}
+
+.nav button:hover {
+    background: #334155;
+    border-color: #475569;
+    transform: translateY(-1px);
 }
 
 #mesActual {
-    font-size: 1.15em;
-    font-weight: 600;
-}
-
-/* 📅 Letras de los días de la semana (L M X J V S D) */
-.semana {
-    display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 4px;
-    width: 100%;
-    max-width: 400px;
+    font-size: 1.4em;
+    font-weight: 700;
+    color: #f8fafc;
+    min-width: 140px;
     text-align: center;
-    font-weight: bold;
-    color: #94a3b8;
-    font-size: 0.85em;
-    margin-bottom: 6px;
-    padding: 0 8px;
 }
 
-/* 📅 Cuadrícula elástica del Calendario */
+/* ------------------ Semana ------------------ */
+.semana { 
+    display: grid; 
+    grid-template-columns: repeat(7, 1fr); 
+    font-weight: 700; 
+    margin: 0 auto 10px auto; 
+    text-align: center; 
+    color: #94a3b8; 
+    font-size: 1.1em; 
+    width: 100%;
+    max-width: 800px; /* Alineado perfectamente con el tamaño del calendario */
+    padding: 0 15px;
+    box-sizing: border-box;
+}
+.semana div { padding: 10px 0; }
+
+/* ------------------ Calendario ------------------ */
 #calendar {
     display: grid;
     grid-template-columns: repeat(7, 1fr);
-    gap: 5px;
+    gap: 10px;
+    padding: 15px;
     width: 100%;
-    max-width: 400px;
-    background: #1e293b;
-    padding: 8px;
-    border-radius: 14px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
-    border: 1px solid #334155;
+    max-width: 800px; /* Tamaño máximo premium para pantallas grandes */
+    box-sizing: border-box;
 }
 
-/* Celdas de los Días individuales */
+/* 🌟 MEJORA: Estructura interna elástica y ampliación vertical */
 .day {
-    width: 100% !important;
-    min-width: 0 !important;
-    aspect-ratio: 1; 
-    background-color: #0f172a;
-    border-radius: 8px;
+    position: relative;
+    background: #1e293b; 
+    cursor: pointer;
+    border-radius: 14px; 
+    min-height: 105px; /* 🌟 Subido en escritorio para que sea super espacioso */
+    font-size: 1.3em; 
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between; /* 🌟 Mantiene el número arriba y las horas abajo */
     align-items: center;
     text-align: center;
-    font-size: 0.8em;
-    font-weight: 600;
-    cursor: pointer;
-    position: relative;
-    border: 1px solid #1e293b;
-    color: #f1f5f9;
+    padding: 8px 4px; 
+    box-sizing: border-box;
+    white-space: pre-line;
+    
+    color: #ffffff !important;
+    font-weight: 700 !important;
+
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2), 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-/* Sábados y Domingos con el número atenuado */
-.day.fin-de-semana {
-    color: #526173 !important;
+/* 🌟 MEJORA ESPECÍFICA: Formato limpio para el texto del turno (horas y min) */
+.day span, .day div:not(.indicador-nota) {
+    font-size: 0.55em !important; /* Letra compacta de alta nitidez */
+    line-height: 1.2;
+    font-weight: 700;
+    color: inherit; /* Mantiene el color inteligente de tu paleta */
+    display: block;
+    width: 100%;
+    word-break: break-word; /* Evita que el texto empuje la casilla a los lados */
+    margin-top: auto; /* Empuja el texto de las horas siempre a la base */
+    padding-top: 4px;
 }
 
+/* Elevación física al pasar el puntero (PC) */
+.day:hover {
+    transform: translateY(-4px);
+    background: #25334a;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.2);
+}
+
+/* Sensación de clic mecánico al pulsar con el dedo (Móvil) */
+.day:active {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* ------------------ Paleta de Colores Inteligente ------------------ */
+.normal { 
+    background-color: #1e3a8a !important; 
+    color: #ffffff !important; 
+    border-bottom: 4px solid #3b82f6; 
+}
+.vacaciones { 
+    background-color: #064e3b !important; 
+    color: #34d399 !important; 
+}
+.festivo { 
+    background-color: #581c87 !important; 
+    color: #f1f5f9 !important;
+    border-bottom: 4px solid #a855f7;
+}
+.festivo-trabajado { 
+    background-color: #78350f !important; 
+    color: #fbbf24 !important; 
+    border-bottom: 4px solid #f59e0b; 
+}
+.urbano { 
+    background-color: #334155 !important; 
+    color: #f1f5f9 !important; 
+    border-bottom: 4px solid #94a3b8; 
+}
+
+/* Días vacíos fuera de rango */
+.day:empty {
+    background-color: rgba(255, 255, 255, 0.01) !important;
+    border: 1px dashed rgba(255, 255, 255, 0.03) !important;
+    box-shadow: none;
+    pointer-events: none;
+}
+
+/* Destacar el Día Actual (Alta Visibilidad Neón) */
+.day.hoy-actual {
+    border: 2px solid #f97316 !important; 
+    box-shadow: 0 0 15px rgba(249, 115, 22, 0.5) !important;
+    background: #0f172a !important;
+}
+
+/* Indicador de Notas */
 .indicador-nota {
     position: absolute;
-    top: 2px;
-    right: 2px;
-    font-size: 0.7em;
+    top: 6px;
+    right: 8px;
+    font-size: 0.6em;
 }
 
-.hoy-actual {
-    border: 2px solid #38bdf8 !important;
-    box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
-}
-
-/* ==========================================================================
-   COLORES DE LOS TURNOS
-   ========================================================================== */
-.day.normal { background-color: #1e3a8a !important; color: #ffffff !important; border: none; }
-.day.vacaciones { background-color: #065f46 !important; color: #ffffff !important; border: none; }
-.day.festivo { background-color: #7f1d1d !important; color: #ffffff !important; border: none; }
-.day.festivo-trabajado { background-color: #a21caf !important; color: #ffffff !important; border: none; }
-.day.urbano { background-color: #475569 !important; color: #ffffff !important; border: none; }
-
-/* ==========================================================================
-   🚨 BLINDAJE PARA TODOS LOS BOTONES DE ABAJO (EXCEL, COPIAS, ETC)
-   ========================================================================== */
-button, .grid-botones, .grid-botones button, div[style*="grid"] {
-    max-width: 100% !important;
-    white-space: normal !important; /* Obliga a los textos largos a saltar de línea */
-    word-break: break-word !important;
-}
-
-/* Si tienes los botones de Excel metidos en divs o flexbox sueltos abajo */
-body > button, body > div {
-    width: 100%;
-    max-width: 400px !important;
-}
-
-/* ==========================================================================
-   FORMULARIO FLOTANTE (ESTILO MODAL INTERNO)
-   ========================================================================== */
+/* ------------------ Formulario Estilo Bottom Sheet ------------------ */
 #formulario {
     position: fixed;
-    top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(15, 23, 42, 0.9);
-    backdrop-filter: blur(4px);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 1000;
-    padding: 12px;
-}
-
-.hidden {
-    display: none !important;
-}
-
-#formulario h2, #formulario h3, #formulario label, #formulario select, #formulario textarea, #formulario .grid-botones, #formulario #listaTurnos {
+    bottom: 0;
+    left: 0;
     width: 100%;
-    max-width: 350px !important;
+    max-width: 100%;
+    background: #0f172afc; 
+    padding: 25px 20px 40px 20px;
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -10px 30px rgba(0,0,0,0.6);
+    font-size: 1.1em;
+    z-index: 100;
+    backdrop-filter: blur(15px);
+    box-sizing: border-box;
+    max-height: 85vh;
+    overflow-y: auto;
+    transition: transform 0.3s ease-out;
+    border-top: 1px solid #334155;
 }
 
-#formulario h2 { font-size: 1.25em; color: #38bdf8; margin-bottom: 8px; text-align: center; }
-#formulario h3 { font-size: 0.95em; color: #94a3b8; margin-top: 6px; margin-bottom: 4px; }
-#formulario label { font-size: 0.85em; color: #94a3b8; margin-top: 6px; margin-bottom: 2px; }
+#formulario.hidden {
+    display: block !important;
+    transform: translateY(100%);
+}
 
-#formulario select, #formulario textarea {
-    background: #0f172a;
-    border: 1px solid #475569;
+#formulario h2, #formulario h3 { margin-top: 0; color: #fff; font-weight: 700; }
+#formulario label { display: block; margin-top: 15px; font-weight: 600; color: #94a3b8; }
+
+#formulario input, #formulario select, #formulario textarea {
+    display: block;
+    width: 100%;
+    margin: 10px 0;
+    font-size: 16px !important;
+    padding: 12px;
+    border-radius: 10px;
+    border: 1px solid #334155;
+    background-color: #1e293b;
     color: #f8fafc;
-    padding: 8px;
-    border-radius: 8px;
-    font-size: 0.95em;
-    margin-bottom: 6px;
+    box-sizing: border-box;
 }
 
-#formulario textarea { resize: none; height: 50px; }
-#listaTurnos { background: #0f172a; padding: 10px; border-radius: 8px; font-size: 0.85em; border: 1px solid #334155; color: #cbd5e1; line-height: 1.4; margin-bottom: 6px; }
-
+/* Rejilla de botones del formulario */
 .grid-botones {
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 8px;
+    gap: 12px;
+    margin-top: 20px;
 }
 
-.grid-botones button {
-    padding: 10px 6px;
-    font-size: 0.85em;
-    font-weight: bold;
-    border-radius: 8px;
+#formulario button {
+    padding: 16px;
+    font-size: 1em;
+    font-weight: 700;
+    border-radius: 12px;
     border: none;
     cursor: pointer;
     color: white;
+    box-sizing: border-box;
+    transition: all 0.2s;
 }
 
-.btn-entrada { background: #2563eb !important; }
-.btn-salida { background: #dc2626 !important; }
-.btn-eliminar { background: #b91c1c !important; }
-.btn-cancelar { background: #475569 !important; }
-.btn-guardar { background: #0d9488 !important; grid-column: span 2; }
+#formulario button:active { transform: scale(0.97); }
 
-/* ==========================================================================
-   RESÚMENES MENSUALES Y COPIAS
-   ========================================================================== */
+.btn-entrada { background: #16a34a; }
+.btn-entrada:hover { background: #15803d; }
+.btn-salida { background: #2563eb; }
+.btn-salida:hover { background: #1d4ed8; }
+.btn-eliminar { background: #dc2626; }
+.btn-eliminar:hover { background: #b91c1c; }
+.btn-cancelar { background: #475569; }
+.btn-cancelar:hover { background: #334155; }
+.btn-guardar { background: #ea580c; grid-column: span 2; }
+.btn-guardar:hover { background: #c2410c; }
+
+.hidden { display: none !important; }
+
+/* ------------------ Resumen mensual ------------------ */
 #resumen {
+    margin: 25px auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
     width: 100%;
-    max-width: 400px;
-    margin-top: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    padding-bottom: 30px;
+    max-width: 800px;
+    padding: 0 15px;
+    box-sizing: border-box;
 }
 
 .mes-card {
     background: #1e293b;
-    border-radius: 12px;
-    padding: 14px;
-    border: 1px solid #334155;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+    padding: 24px; 
+    border-radius: 16px; 
+    text-align: left;
+    border-top: 5px solid #3b82f6; 
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 8px 10px -6px rgba(0, 0, 0, 0.3);
 }
 
-.mes-card h3 {
-    font-size: 1em;
-    color: #38bdf8;
-    margin-bottom: 8px;
-    border-bottom: 1px solid #334155;
-    padding-bottom: 4px;
-}
-
-.dato {
+.mes-card h3 { margin-top: 0; margin-bottom: 15px; font-size: 1.3em; color: #3b82f6; font-weight: 700; }
+.mes-card .dato {
     display: flex;
     justify-content: space-between;
-    font-size: 0.9em;
-    margin: 5px 0;
+    padding: 8px 0;
+    font-size: 1.05em;
+    border-bottom: 1px solid #334155;
     color: #cbd5e1;
 }
+.mes-card .dato:last-child { border-bottom: none; }
 
-.dato span:last-child {
-    font-weight: bold;
-    color: #f8fafc;
+/* ------------------ Ajustes Móviles Refinados ------------------ */
+@media(max-width: 480px) {
+    .header { padding: 12px 10px; }
+    .header h1 { font-size: 1.3em; }
+    .logo { width: 40px; margin-right: 10px; }
+    
+    .nav { gap: 10px; margin: 15px 0; }
+    .nav button { padding: 10px 14px; font-size: 14px; }
+    #mesActual { font-size: 1.1em; min-width: 110px; }
+    
+    .semana { font-size: 0.9em; gap: 0; margin-bottom: 5px; }
+    #calendar { gap: 6px; padding: 8px; }
+    
+    /* 🌟 COMPORTAMIENTO MÓVIL: Casillas altas (88px) y muy legibles */
+    .day { 
+        min-height: 88px; 
+        font-size: 1.1em; 
+        border-radius: 10px; 
+        padding: 6px 2px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .day:hover {
+        transform: translateY(-2px); 
+    }
+    .indicador-nota { top: 4px; right: 4px; font-size: 0.55em; }
 }
