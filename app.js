@@ -108,6 +108,7 @@ function cerrar(){
 }
 
 // ------------------ Acciones de Fichaje (Disparadores de Backup Directo) ------------------
+// ------------------ Fichar Entrada Modificado ------------------
 function ficharEntrada(){
     let datos=JSON.parse(localStorage.getItem(fechaActual))||{};
     if(!datos.turnos) datos.turnos=[];
@@ -124,12 +125,30 @@ function ficharEntrada(){
     datos.tipo = datos.tipo||"normal";
     datos.nota = notasInput.value||"";
     
-    // Al guardar un cambio real, consolidamos el estado actual
     guardarCopiaAutomatica(); 
     localStorage.setItem(fechaActual,JSON.stringify(datos));
     
     generarCalendario();
-    abrirFormulario(fechaActual);
+    cerrar(); // 🌟 ¡MEJORA! Ahora se cierra solo al instante al fichar la entrada
+}
+
+// ------------------ Autocompletado de Jornada Urbana Modificado ------------------
+function aplicarUrbanoAutomatico() {
+    if (!fechaActual) return;
+
+    let turnoUrbano = { entrada: "07:15", salida: "15:15" };
+    const datosDia = {
+        tipo: "urbano", 
+        nota: notasInput.value || "", 
+        turnos: [turnoUrbano],
+        horas: "8h 00m" 
+    };
+
+    guardarCopiaAutomatica(); 
+    localStorage.setItem(fechaActual, JSON.stringify(datosDia));
+    
+    generarCalendario();
+    cerrar(); // 🌟 ¡MEJORA! Aseguramos que se cierre solo también en el botón de Urbano
 }
 
 function ficharSalida(){
