@@ -184,20 +184,20 @@ body {
 /* ==========================================================================
    COLORES DE LOS TURNOS (Con jerarquía visual cromática)
    ========================================================================== */
-.day.normal { background-color: #1e3a8a !important; border: none; }
-.day.normal .info-turno { color: #38bdf8 !important; } /* Texto cian suave */
+.day.normal { background-color: #095fff !important; border: none; }
+.day.normal .info-turno { color: #edeeee !important; } /* Texto cian suave */
 
 .day.vacaciones { background-color: #065f46 !important; border: none; }
-.day.vacaciones .info-turno { color: #34d399 !important; } /* Texto esmeralda suave */
+.day.vacaciones .info-turno { color: #ffffff !important; } /* Texto esmeralda suave */
 
-.day.festivo { background-color: #7f1d1d !important; border: none; }
-.day.festivo .info-turno { color: #f87171 !important; } /* Texto rojizo suave */
+.day.festivo { background-color: #4c0092 !important; border: none; }
+.day.festivo .info-turno { color: #f7f6f6 !important; } /* Texto rojizo suave */
 
 .day.festivo-trabajado { background-color: #a21caf !important; border: none; }
-.day.festivo-trabajado .info-turno { color: #f472b6 !important; } /* Texto rosa pastel */
+.day.festivo-trabajado .info-turno { color: #fdfdfd !important; } /* Texto rosa pastel */
 
-.day.urbano { background-color: #475569 !important; border: none; }
-.day.urbano .info-turno { color: #cbd5e1 !important; } /* Texto gris claro nítido */
+.day.urbano { background-color: #050505 !important; border: none; }
+.day.urbano .info-turno { color: #f5f5ff !important; } /* Texto gris claro nítido */
 
 /* Forzar que el número siempre conserve brillo blanco en días con turnos */
 .day.normal .num-dia,
@@ -205,7 +205,7 @@ body {
 .day.festivo .num-dia,
 .day.festivo-trabajado .num-dia,
 .day.urbano .num-dia {
-    color: #ffffff !important;
+    color: #e9fa01 !important;
     opacity: 1;
 }
 
