@@ -100,10 +100,10 @@ function abrirFormulario(fecha){
                 let [hS,mS] = t.salida.split(":").map(Number);
                 
                 let minutos = (hS*60+mS)-(hE*60+mE);
-                if(minutos < 0) minutos += 1440; 
+                if(minutos < 0) minutes += 1440; 
 
                 let horas = Math.floor(minutos/60);
-                let mins = minutes % 60;
+                let mins = minutos % 60;
                 listaTurnos.innerHTML += `T${i+1}: ${t.entrada} - ${t.salida} (${horas}h ${mins}m)<br>`;
             } else if(t.entrada && !t.salida){
                 listaTurnos.innerHTML += `T${i+1}: ${t.entrada} - ...<br>`;
@@ -284,8 +284,9 @@ function mostrarResumen(){
         contenedorBoton.id = "btnExportarExcel";
         contenedorBoton.style.cssText = "text-align: center; margin: 30px auto; width: 90%; max-width: 400px; display: flex; flex-direction: column; gap: 12px; clear: both;";
         
+        // 🌟 'appearance: none;' define el estándar y '-webkit-appearance' asegura compatibilidad con motores WebKit
         contenedorBoton.innerHTML = `
-            <button onclick="exportarAExcel()" style="width: 100%; background: #16a34a; color: white; border: none; padding: 15px; font-size: 1.05em; font-weight: bold; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); -webkit-appearance: none;">
+            <button onclick="exportarAExcel()" style="width: 100%; background: #16a34a; color: white; border: none; padding: 15px; font-size: 1.05em; font-weight: bold; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); appearance: none; -webkit-appearance: none; -moz-appearance: none;">
                 📥 Exportar Historial a Excel
             </button>
             
@@ -443,33 +444,45 @@ function restaurarCopiaSeguridad(input) {
     lector.readAsText(archivo);
 }
 
-// ================= GESTOS TÁCTILES REFINADOS (SWIPE) =================
+// ================= MOTOR DE GESTOS TÁCTILES (SWIPE) ANTIBLOQUEO =================
 
 let toqueInicioX = 0;
-let toqueFinX = 0;
+let toqueInicioY = 0;
 
+// Vinculamos directamente al contenedor del calendario para no interferir en el formulario inferior
 calendar.addEventListener('touchstart', (e) => {
     toqueInicioX = e.changedTouches[0].screenX;
+    toqueInicioY = e.changedTouches[0].screenY;
 }, { passive: true });
+
+calendar.addEventListener('touchmove', (e) => {
+    let difX = Math.abs(e.changedTouches[0].screenX - toqueInicioX);
+    let difY = Math.abs(e.changedTouches[0].screenY - toqueInicioY);
+    
+    // Si la inclinación del gesto es marcadamente horizontal, bloqueamos la acción nativa del navegador
+    if (difX > difY && difX > 10) {
+        if (e.cancelable) e.preventDefault(); 
+    }
+}, { passive: false }); // Físicamente necesario pasarle 'passive: false' para poder abortar la navegación nativa
 
 calendar.addEventListener('touchend', (e) => {
-    toqueFinX = e.changedTouches[0].screenX;
-    procesarGestoLateral();
+    let toqueFinX = e.changedTouches[0].screenX;
+    let toqueFinY = e.changedTouches[0].screenY;
+    
+    let distanciaX = toqueFinX - toqueInicioX;
+    let distanciaY = toqueFinY - toqueInicioY;
+    
+    const umbralMinimo = 60; // Sensibilidad calibrada para pantallas móviles
+    
+    // Verificamos que sea un deslizamiento intencionado de izquierda/derecha y no arriba/abajo
+    if (Math.abs(distanciaX) > Math.abs(distanciaY) && Math.abs(distanciaX) > umbralMinimo) {
+        if (distanciaX < 0) {
+            mesSiguiente();
+        } else {
+            mesAnterior();
+        }
+    }
 }, { passive: true });
-
-function procesarGestoLateral() {
-    const umbralMinimo = 60; // Desplazamiento mínimo en píxeles
-    
-    // Deslizar izquierda -> Siguiente mes
-    if (toqueInicioX - toqueFinX > umbralMinimo) {
-        mesSiguiente();
-    }
-    
-    // Deslizar derecha -> Anterior mes
-    if (toqueFinX - toqueInicioX > umbralMinimo) {
-        mesAnterior();
-    }
-}
 
 // ================= INICIALIZACIÓN DEL ENTORNO SEGURIZADO =================
 
