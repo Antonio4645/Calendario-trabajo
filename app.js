@@ -103,7 +103,7 @@ function abrirFormulario(fecha){
                 if(minutos < 0) minutos += 1440; 
 
                 let horas = Math.floor(minutos/60);
-                let mins = minutos % 60;
+                let mins = minutes % 60;
                 listaTurnos.innerHTML += `T${i+1}: ${t.entrada} - ${t.salida} (${horas}h ${mins}m)<br>`;
             } else if(t.entrada && !t.salida){
                 listaTurnos.innerHTML += `T${i+1}: ${t.entrada} - ...<br>`;
@@ -139,7 +139,7 @@ function ficharEntrada(){
     localStorage.setItem(fechaActual,JSON.stringify(datos));
     
     generarCalendario();
-    cerrar(); // 🌟 Cierre automático para guardarse el móvil al instante
+    cerrar(); 
 }
 
 function ficharSalida(){
@@ -209,12 +209,12 @@ function aplicarUrbanoAutomatico() {
     localStorage.setItem(fechaActual, JSON.stringify(datosDia));
     
     generarCalendario();
-    cerrar(); // 🌟 Cierre automático optimizado para un toque en Urbano
+    cerrar(); 
 }
 
 function eliminarDia(){
     if(localStorage.getItem(fechaActual)) {
-        guardarCopiaAutomatica(); // El autoguardado retiene el día por si fue por error
+        guardarCopiaAutomatica(); 
         localStorage.removeItem(fechaActual);
     }
     generarCalendario();
@@ -372,7 +372,9 @@ function restaurarCopiaAutomatica() {
         });
 
         Object.keys(datosImportados).forEach(clave => {
-            localStorage.setItem(clave, datosImportados[clave]);
+            if (datosImportados[clave] !== null) {
+                localStorage.setItem(clave, datosImportados[clave]);
+            }
         });
         
         alert("🔄 ¡Historial restablecido con éxito!");
@@ -439,6 +441,34 @@ function restaurarCopiaSeguridad(input) {
         }
     };
     lector.readAsText(archivo);
+}
+
+// ================= GESTOS TÁCTILES REFINADOS (SWIPE) =================
+
+let toqueInicioX = 0;
+let toqueFinX = 0;
+
+calendar.addEventListener('touchstart', (e) => {
+    toqueInicioX = e.changedTouches[0].screenX;
+}, { passive: true });
+
+calendar.addEventListener('touchend', (e) => {
+    toqueFinX = e.changedTouches[0].screenX;
+    procesarGestoLateral();
+}, { passive: true });
+
+function procesarGestoLateral() {
+    const umbralMinimo = 60; // Desplazamiento mínimo en píxeles
+    
+    // Deslizar izquierda -> Siguiente mes
+    if (toqueInicioX - toqueFinX > umbralMinimo) {
+        mesSiguiente();
+    }
+    
+    // Deslizar derecha -> Anterior mes
+    if (toqueFinX - toqueInicioX > umbralMinimo) {
+        mesAnterior();
+    }
 }
 
 // ================= INICIALIZACIÓN DEL ENTORNO SEGURIZADO =================

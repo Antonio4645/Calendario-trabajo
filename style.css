@@ -118,19 +118,32 @@ body {
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: space-between; /* 🌟 Cambiado a space-between: Número arriba, Turno abajo */
     align-items: center;
     text-align: center;
-    font-size: 0.8em;
-    font-weight: 600;
+    font-size: 0.85em; /* Un pelín más grande el número */
+    font-weight: 700;
     cursor: pointer;
     position: relative;
     border: 1px solid #1e293b;
     color: #f1f5f9;
+    padding: 5px 2px;
 }
 
 .day:active {
     transform: scale(0.95);
+}
+
+/* 🌟 MEJORA DEFENSIVA: Evita que el texto inyectado del turno desborde la celda */
+.day span, .day div:not(.indicador-nota) {
+    font-size: 0.58em !important; /* Letra ultra compacta y nítida para las horas */
+    line-height: 1.1;
+    font-weight: bold;
+    color: inherit;
+    display: block;
+    width: 100%;
+    word-break: break-all;
+    margin-top: auto; /* Lo clava en el fondo de la celda */
 }
 
 /* Sábados y Domingos con el número atenuado */
@@ -146,10 +159,16 @@ body {
     font-size: 0.7em;
 }
 
-/* Resaltar día actual */
+/* 🌟 RESALTAR DÍA ACTUAL CON EFECTO NEÓN (GLOW) */
 .hoy-actual {
     border: 2px solid #38bdf8 !important;
-    box-shadow: 0 0 8px rgba(56, 189, 248, 0.4);
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.6), inset 0 0 6px rgba(56, 189, 248, 0.2) !important;
+    animation: pulsoNeon 2.5s infinite alternate ease-in-out;
+}
+
+@keyframes pulsoNeon {
+    0% { box-shadow: 0 0 6px rgba(56, 189, 248, 0.4); }
+    100% { box-shadow: 0 0 16px rgba(56, 189, 248, 0.8), inset 0 0 4px rgba(56, 189, 248, 0.3); }
 }
 
 /* ==========================================================================
@@ -162,29 +181,53 @@ body {
 .day.urbano { background-color: #475569 !important; color: #ffffff !important; border: none; }
 
 /* ==========================================================================
-   FORMULARIO FLOTANTE (ESTILO MODAL MEJORADO PARA PANTALLAS ESTRECHAS)
+   FORMULARIO FLOTANTE (EFECTO ANIMADO BOTTOM SHEET)
    ========================================================================== */
 #formulario {
     position: fixed;
     top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(15, 23, 42, 0.9);
-    backdrop-filter: blur(4px);
+    background: rgba(15, 23, 42, 0.6); /* Fondo traslúcido oscuro */
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-end; /* 🌟 Empuja el formulario al borde inferior */
     align-items: center;
     z-index: 1000;
-    padding: 12px;
+    transition: opacity 0.3s ease;
 }
 
-.hidden {
-    display: none !important;
+/* 🌟 El contenedor interno que aloja tus inputs y botones */
+.contenido-modal {
+    width: 100%;
+    max-width: 400px !important; /* Adaptado al ancho de tu app */
+    background: #1e293b;
+    border-radius: 20px 20px 0 0; /* Esquinas redondeadas solo arriba */
+    padding: 20px 16px 35px 16px;
+    box-shadow: 0 -8px 24px rgba(0,0,0,0.5);
+    border-top: 1px solid #334155;
+    box-sizing: border-box;
+    transform: translateY(0); /* Estado visible */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Manejo del estado oculto sin romper las transiciones */
+#formulario.hidden {
+    display: flex !important;
+    opacity: 0;
+    pointer-events: none;
+}
+
+#formulario.hidden .contenido-modal {
+    transform: translateY(100%); /* Lo esconde deslizándolo hacia abajo */
 }
 
 /* Forzar que todos los elementos internos se queden dentro del límite */
 #formulario h2, #formulario h3, #formulario label, #formulario select, #formulario textarea, #formulario .grid-botones, #formulario #listaTurnos {
     width: 100%;
     max-width: 350px !important;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 #formulario h2 {
@@ -217,6 +260,7 @@ body {
     border-radius: 8px;
     font-size: 0.95em;
     margin-bottom: 6px;
+    box-sizing: border-box;
 }
 
 #formulario textarea {
@@ -233,13 +277,15 @@ body {
     color: #cbd5e1;
     line-height: 1.4;
     margin-bottom: 6px;
+    box-sizing: border-box;
 }
 
-/* 🚨 REJILLA DE BOTONES DEFENSIVA: Permite romper texto largo */
+/* 🚨 REJILLA DE BOTONES DEFENSIVA */
 .grid-botones {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
+    box-sizing: border-box;
 }
 
 .grid-botones button {
@@ -252,7 +298,7 @@ body {
     color: white;
     box-shadow: 0 4px 6px rgba(0,0,0,0.15);
     -webkit-appearance: none;
-    white-space: normal !important; /* IMPORTANTE: Deja que el texto salte de línea si no cabe */
+    white-space: normal !important; 
     text-align: center;
 }
 

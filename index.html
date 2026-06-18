@@ -11,7 +11,7 @@
 <body>
 
 <div class="header">
-    <img src="logo.png" alt="Logo" style="height: 40px !important; width: auto !important; object-fit: contain !important;">
+    <img src="logo.png" alt="Logo">
     <h1>Mi Calendario de Trabajo</h1>
 </div>
 
@@ -28,34 +28,35 @@
 <div id="calendar"></div>
 
 <div id="formulario" class="hidden">
-    <h2 id="fechaSeleccionada"></h2>
+    <div class="contenido-modal"> <h2 id="fechaSeleccionada"></h2>
 
-    <div id="listaTurnos"></div>
+        <div id="listaTurnos"></div>
 
-    <h3>Tipo de día:</h3>
-    <select id="tipo">
-        <option value="normal">Trabajo normal</option>
-        <option value="vacaciones">Vacaciones</option>
-        <option value="festivo">Festivo</option>
-        <option value="festivo-trabajado">Festivo trabajado</option>
-        <option value="urbano">Trabajo urbano</option>
-    </select>
+        <h3>Tipo de día:</h3>
+        <select id="tipo">
+            <option value="normal">Trabajo normal</option>
+            <option value="vacaciones">Vacaciones</option>
+            <option value="festivo">Festivo</option>
+            <option value="festivo-trabajado">Festivo trabajado</option>
+            <option value="urbano">Trabajo urbano</option>
+        </select>
 
-    <label>Notas:</label>
-    <textarea id="notas" rows="3" placeholder="Escribe aquí tus notas..."></textarea>
+        <label>Notas:</label>
+        <textarea id="notas" rows="3" placeholder="Escribe aquí tus notas..."></textarea>
 
-    <div class="grid-botones">
-    <button type="button" onclick="aplicarUrbanoAutomatico()" style="grid-column: span 2; background: #34495e; border: 1px solid #4f5b66;">
-        🏢 Aplicar Horario Urbano (07:30 - 15:00)
-    </button>
+        <div class="grid-botones">
+            <button type="button" onclick="aplicarUrbanoAutomatico()" style="grid-column: span 2; background: #34495e; border: 1px solid #4f5b66;">
+                🏢 Aplicar Horario Urbano (07:15 - 15:15)
+            </button>
 
-    <button class="btn-entrada" onclick="ficharEntrada()">🛫 Fichar Entrada</button>
-    <button class="btn-salida" onclick="ficharSalida()">🛬 Fichar Salida</button>
-    <button class="btn-eliminar" onclick="eliminarDia()">🗑️ Eliminar Día</button>
-    <button class="btn-cancelar" onclick="cerrar()">❌ Cancelar</button>
-    <button class="btn-guardar" onclick="guardarTipo()">💾 Guardar Tipo y Notas</button>
-</div>
-</div>
+            <button class="btn-entrada" onclick="ficharEntrada()">🛫 Fichar Entrada</button>
+            <button class="btn-salida" onclick="ficharSalida()">🛬 Fichar Salida</button>
+            <button class="btn-eliminar" onclick="eliminarDia()">🗑️ Eliminar Día</button>
+            <button class="btn-cancelar" onclick="cerrar()">❌ Cancelar</button>
+            <button class="btn-guardar" onclick="guardarTipo()">💾 Guardar Tipo y Notas</button>
+        </div>
+
+    </div> </div>
 
 <div id="resumen"></div>
 
