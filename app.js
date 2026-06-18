@@ -70,9 +70,18 @@ function generarCalendario(){
             }
         }
 
-        let textoDia = document.createElement("span");
-        textoDia.innerText = i + "\n" + letra;
-        div.appendChild(textoDia);
+        // 🌟 NUEVA JERARQUÍA: Separamos el número de los datos de turnos en etiquetas distintas
+        let contenedorNum = document.createElement("span");
+        contenedorNum.classList.add("num-dia");
+        contenedorNum.innerText = i;
+        div.appendChild(contenedorNum);
+
+        if(letra){
+            let contenedorInfo = document.createElement("span");
+            contenedorInfo.classList.add("info-turno");
+            contenedorInfo.innerText = letra;
+            div.appendChild(contenedorInfo);
+        }
 
         div.onclick=()=>abrirFormulario(fecha);
         calendar.appendChild(div);
@@ -100,7 +109,7 @@ function abrirFormulario(fecha){
                 let [hS,mS] = t.salida.split(":").map(Number);
                 
                 let minutos = (hS*60+mS)-(hE*60+mE);
-                if(minutos < 0) minutes += 1440; 
+                if(minutos < 0) minutos += 1440; 
 
                 let horas = Math.floor(minutos/60);
                 let mins = minutos % 60;
@@ -284,7 +293,6 @@ function mostrarResumen(){
         contenedorBoton.id = "btnExportarExcel";
         contenedorBoton.style.cssText = "text-align: center; margin: 30px auto; width: 90%; max-width: 400px; display: flex; flex-direction: column; gap: 12px; clear: both;";
         
-        // 🌟 'appearance: none;' define el estándar y '-webkit-appearance' asegura compatibilidad con motores WebKit
         contenedorBoton.innerHTML = `
             <button onclick="exportarAExcel()" style="width: 100%; background: #16a34a; color: white; border: none; padding: 15px; font-size: 1.05em; font-weight: bold; border-radius: 12px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); appearance: none; -webkit-appearance: none; -moz-appearance: none;">
                 📥 Exportar Historial a Excel
@@ -449,7 +457,6 @@ function restaurarCopiaSeguridad(input) {
 let toqueInicioX = 0;
 let toqueInicioY = 0;
 
-// Vinculamos directamente al contenedor del calendario para no interferir en el formulario inferior
 calendar.addEventListener('touchstart', (e) => {
     toqueInicioX = e.changedTouches[0].screenX;
     toqueInicioY = e.changedTouches[0].screenY;
@@ -459,11 +466,10 @@ calendar.addEventListener('touchmove', (e) => {
     let difX = Math.abs(e.changedTouches[0].screenX - toqueInicioX);
     let difY = Math.abs(e.changedTouches[0].screenY - toqueInicioY);
     
-    // Si la inclinación del gesto es marcadamente horizontal, bloqueamos la acción nativa del navegador
     if (difX > difY && difX > 10) {
         if (e.cancelable) e.preventDefault(); 
     }
-}, { passive: false }); // Físicamente necesario pasarle 'passive: false' para poder abortar la navegación nativa
+}, { passive: false });
 
 calendar.addEventListener('touchend', (e) => {
     let toqueFinX = e.changedTouches[0].screenX;
@@ -472,9 +478,8 @@ calendar.addEventListener('touchend', (e) => {
     let distanciaX = toqueFinX - toqueInicioX;
     let distanciaY = toqueFinY - toqueInicioY;
     
-    const umbralMinimo = 60; // Sensibilidad calibrada para pantallas móviles
+    const umbralMinimo = 60;
     
-    // Verificamos que sea un deslizamiento intencionado de izquierda/derecha y no arriba/abajo
     if (Math.abs(distanciaX) > Math.abs(distanciaY) && Math.abs(distanciaX) > umbralMinimo) {
         if (distanciaX < 0) {
             mesSiguiente();
@@ -487,9 +492,8 @@ calendar.addEventListener('touchend', (e) => {
 // ================= INICIALIZACIÓN DEL ENTORNO SEGURIZADO =================
 
 generarCalendario();
-guardarCopiaAutomatica(); // Captura limpia del estado al arrancar la app
+guardarCopiaAutomatica();
 
-// ------------------ Service Worker (PWA) ------------------
 if ("serviceWorker" in navigator) {
     const esLocal = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
     if (!esLocal) {

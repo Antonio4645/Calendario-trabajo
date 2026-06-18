@@ -118,37 +118,47 @@ body {
     border-radius: 8px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between; /* 🌟 Cambiado a space-between: Número arriba, Turno abajo */
+    justify-content: space-between; /* Número arriba, Turno abajo */
     align-items: center;
     text-align: center;
-    font-size: 0.85em; /* Un pelín más grande el número */
-    font-weight: 700;
     cursor: pointer;
     position: relative;
     border: 1px solid #1e293b;
-    color: #f1f5f9;
     padding: 5px 2px;
+    box-sizing: border-box;
 }
 
 .day:active {
     transform: scale(0.95);
 }
 
-/* 🌟 MEJORA DEFENSIVA: Evita que el texto inyectado del turno desborde la celda */
-.day span, .day div:not(.indicador-nota) {
-    font-size: 0.58em !important; /* Letra ultra compacta y nítida para las horas */
-    line-height: 1.1;
-    font-weight: bold;
-    color: inherit;
-    display: block;
-    width: 100%;
-    word-break: break-all;
-    margin-top: auto; /* Lo clava en el fondo de la celda */
+/* 🌟 JERARQUÍA VÍSUAL ESTRUCTURADA PARA LAS CELDAS */
+
+/* Estilo para el número del día (Prioridad Alta) */
+.num-dia {
+    font-size: 0.95em !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    opacity: 0.95;
+    margin-bottom: auto; /* Empuja el contenedor del turno hacia la base */
 }
 
-/* Sábados y Domingos con el número atenuado */
-.day.fin-de-semana {
-    color: #526173 !important;
+/* Sábados y Domingos con el número atenuado (si no tienen un turno asignado) */
+.day.fin-de-semana .num-dia {
+    color: #64748b !important;
+}
+
+/* Estilo base elástico para la información del turno (Prioridad Secundaria) */
+.info-turno {
+    display: block;
+    width: 100%;
+    font-size: 0.55em !important; /* Compacto, nítido y sin desbordes */
+    line-height: 1.2;
+    font-weight: bold;
+    text-align: center;
+    word-break: break-all;
+    margin-top: 4px;
+    color: #94a3b8; /* Tono neutro por defecto */
 }
 
 /* Icono lápiz de notas */
@@ -172,13 +182,32 @@ body {
 }
 
 /* ==========================================================================
-   COLORES DE LOS TURNOS (Tapan el atenuado al fichar)
+   COLORES DE LOS TURNOS (Con jerarquía visual cromática)
    ========================================================================== */
-.day.normal { background-color: #1e3a8a !important; color: #ffffff !important; border: none; }
-.day.vacaciones { background-color: #065f46 !important; color: #ffffff !important; border: none; }
-.day.festivo { background-color: #7f1d1d !important; color: #ffffff !important; border: none; }
-.day.festivo-trabajado { background-color: #a21caf !important; color: #ffffff !important; border: none; }
-.day.urbano { background-color: #475569 !important; color: #ffffff !important; border: none; }
+.day.normal { background-color: #1e3a8a !important; border: none; }
+.day.normal .info-turno { color: #38bdf8 !important; } /* Texto cian suave */
+
+.day.vacaciones { background-color: #065f46 !important; border: none; }
+.day.vacaciones .info-turno { color: #34d399 !important; } /* Texto esmeralda suave */
+
+.day.festivo { background-color: #7f1d1d !important; border: none; }
+.day.festivo .info-turno { color: #f87171 !important; } /* Texto rojizo suave */
+
+.day.festivo-trabajado { background-color: #a21caf !important; border: none; }
+.day.festivo-trabajado .info-turno { color: #f472b6 !important; } /* Texto rosa pastel */
+
+.day.urbano { background-color: #475569 !important; border: none; }
+.day.urbano .info-turno { color: #cbd5e1 !important; } /* Texto gris claro nítido */
+
+/* Forzar que el número siempre conserve brillo blanco en días con turnos */
+.day.normal .num-dia,
+.day.vacaciones .num-dia,
+.day.festivo .num-dia,
+.day.festivo-trabajado .num-dia,
+.day.urbano .num-dia {
+    color: #ffffff !important;
+    opacity: 1;
+}
 
 /* ==========================================================================
    FORMULARIO FLOTANTE (EFECTO ANIMADO BOTTOM SHEET)
@@ -191,13 +220,13 @@ body {
     -webkit-backdrop-filter: blur(8px);
     display: flex;
     flex-direction: column;
-    justify-content: flex-end; /* 🌟 Empuja el formulario al borde inferior */
+    justify-content: flex-end; /* Empuja el formulario al borde inferior */
     align-items: center;
     z-index: 1000;
     transition: opacity 0.3s ease;
 }
 
-/* 🌟 El contenedor interno que aloja tus inputs y botones */
+/* El contenedor interno que aloja tus inputs y botones */
 .contenido-modal {
     width: 100%;
     max-width: 400px !important; /* Adaptado al ancho de tu app */
@@ -280,7 +309,7 @@ body {
     box-sizing: border-box;
 }
 
-/* 🚨 REJILLA DE BOTONES DEFENSIVA */
+/* REJILLA DE BOTONES DEFENSIVA */
 .grid-botones {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -297,7 +326,9 @@ body {
     cursor: pointer;
     color: white;
     box-shadow: 0 4px 6px rgba(0,0,0,0.15);
+    appearance: none;
     -webkit-appearance: none;
+    -moz-appearance: none;
     white-space: normal !important; 
     text-align: center;
 }
