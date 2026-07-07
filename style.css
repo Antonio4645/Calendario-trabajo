@@ -113,7 +113,7 @@ body {
 .day {
     width: 100% !important;
     min-width: 0 !important; /* Evita que el navegador estire las celdas a la fuerza */
-    aspect-ratio: 1; 
+    aspect-ratio: 1 / 1.15; /* Proporción adaptada para que quepa el texto abajo */
     background-color: #0f172a;
     border-radius: 8px;
     display: flex;
@@ -134,7 +134,7 @@ body {
 
 /* 🌟 JERARQUÍA VÍSUAL ESTRUCTURADA PARA LAS CELDAS */
 
-/* Estilo para el número del día (Prioridad Alta) */
+/* Estilo para el número del dia (Prioridad Alta) */
 .num-dia {
     font-size: 0.95em !important;
     font-weight: 700 !important;
@@ -156,9 +156,11 @@ body {
     line-height: 1.2;
     font-weight: bold;
     text-align: center;
-    word-break: break-all;
-    margin-top: 4px;
+    margin-top: auto; /* Fijación absoluta abajo */
     color: #94a3b8; /* Tono neutro por defecto */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Si pones muchas horas añade '...' automáticamente */
 }
 
 /* Icono lápiz de notas */
@@ -184,23 +186,23 @@ body {
 /* ==========================================================================
    COLORES DE LOS TURNOS (Con jerarquía visual cromática)
    ========================================================================== */
-.day.normal { background-color: #095fff !important; border: none; }
-.day.normal .info-turno { color: #edeeee !important; } /* Texto cian suave */
+.day.viajes { background-color: #095fff !important; border: none; }
+.day.viajes .info-turno { color: #edeeee !important; } 
 
 .day.vacaciones { background-color: #065f46 !important; border: none; }
-.day.vacaciones .info-turno { color: #ffffff !important; } /* Texto esmeralda suave */
+.day.vacaciones .info-turno { color: #ffffff !important; } 
 
 .day.festivo { background-color: #4c0092 !important; border: none; }
-.day.festivo .info-turno { color: #f7f6f6 !important; } /* Texto rojizo suave */
+.day.festivo .info-turno { color: #f7f6f6 !important; } 
 
 .day.festivo-trabajado { background-color: #a21caf !important; border: none; }
-.day.festivo-trabajado .info-turno { color: #fdfdfd !important; } /* Texto rosa pastel */
+.day.festivo-trabajado .info-turno { color: #fdfdfd !important; } 
 
 .day.urbano { background-color: #050505 !important; border: none; }
-.day.urbano .info-turno { color: #f5f5ff !important; } /* Texto gris claro nítido */
+.day.urbano .info-turno { color: #f5f5ff !important; } 
 
-/* Forzar que el número siempre conserve brillo blanco en días con turnos */
-.day.normal .num-dia,
+/* Forzar que el número siempre conserve brillo blanco/amarillo en días con turnos */
+.day.viajes .num-dia,
 .day.vacaciones .num-dia,
 .day.festivo .num-dia,
 .day.festivo-trabajado .num-dia,
@@ -215,7 +217,7 @@ body {
 #formulario {
     position: fixed;
     top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(15, 23, 42, 0.6); /* Fondo traslúcido oscuro */
+    background: rgba(15, 23, 42, 0.6); 
     backdrop-filter: blur(8px);
     -webkit-backdrop-filter: blur(8px);
     display: flex;
@@ -229,14 +231,16 @@ body {
 /* El contenedor interno que aloja tus inputs y botones */
 .contenido-modal {
     width: 100%;
-    max-width: 400px !important; /* Adaptado al ancho de tu app */
+    max-width: 400px !important; 
     background: #1e293b;
     border-radius: 20px 20px 0 0; /* Esquinas redondeadas solo arriba */
     padding: 20px 16px 35px 16px;
     box-shadow: 0 -8px 24px rgba(0,0,0,0.5);
     border-top: 1px solid #334155;
     box-sizing: border-box;
-    transform: translateY(0); /* Estado visible */
+    transform: translateY(0); 
+    max-height: 85vh; /* Evita desbordes táctiles si el teclado virtual se despliega */
+    overflow-y: auto;  /* Scroll interno de seguridad */
     transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -248,13 +252,13 @@ body {
 }
 
 #formulario.hidden .contenido-modal {
-    transform: translateY(100%); /* Lo esconde deslizándolo hacia abajo */
+    transform: translateY(100%); 
 }
 
-/* Forzar que todos los elementos internos se queden dentro del límite */
-#formulario h2, #formulario h3, #formulario label, #formulario select, #formulario textarea, #formulario .grid-botones, #formulario #listaTurnos {
+/* Forzar que los elementos del formulario guarden las proporciones de la app */
+#formulario h2, #formulario h3, #formulario label, #formulario select, #formulario textarea, #formulario input, #formulario .grid-botones {
     width: 100%;
-    max-width: 350px !important;
+    max-width: 360px !important;
     margin-left: auto;
     margin-right: auto;
 }
@@ -278,18 +282,28 @@ body {
     color: #94a3b8;
     margin-top: 6px;
     margin-bottom: 2px;
+    display: block;
 }
 
+/* ESTILOS DE INPUTS ADAPTADOS PARA MÓVIL (DEDOS GRANDES) */
 #formulario select, 
-#formulario textarea {
+#formulario textarea,
+#formulario input {
     background: #0f172a;
     border: 1px solid #475569;
     color: #f8fafc;
-    padding: 8px;
+    padding: 10px 12px; 
     border-radius: 8px;
-    font-size: 0.95em;
+    font-size: 1em; /* Previene el zoom automático molesto en pantallas iOS */
     margin-bottom: 6px;
     box-sizing: border-box;
+    width: 100%;
+}
+
+/* Adaptación estética del reloj nativo de Android/iOS al modo oscuro */
+#formulario input[type="time"], 
+#formulario input[type="number"] {
+    color-scheme: dark; 
 }
 
 #formulario textarea {
@@ -297,7 +311,11 @@ body {
     height: 50px;
 }
 
+/* 🛠️ CORRECCIÓN: Estilos independientes y visibles para el panel de turnos superior */
 #listaTurnos {
+    display: block !important; 
+    width: 100%;
+    max-width: 360px;
     background: #0f172a;
     padding: 10px;
     border-radius: 8px;
@@ -305,8 +323,9 @@ body {
     border: 1px solid #334155;
     color: #cbd5e1;
     line-height: 1.4;
-    margin-bottom: 6px;
+    margin: 8px auto; /* Centrado horizontal */
     box-sizing: border-box;
+    text-align: center;
 }
 
 /* REJILLA DE BOTONES DEFENSIVA */
@@ -315,10 +334,11 @@ body {
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     box-sizing: border-box;
+    margin-top: 10px;
 }
 
 .grid-botones button {
-    padding: 10px 6px;
+    padding: 12px 6px; 
     font-size: 0.85em;
     font-weight: bold;
     border-radius: 8px;
@@ -342,7 +362,7 @@ body {
 .btn-salida { background: #dc2626 !important; }
 .btn-eliminar { background: #b91c1c !important; }
 .btn-cancelar { background: #475569 !important; }
-.btn-guardar { background: #0d9488 !important; grid-column: span 2; }
+.btn-guardar { background: #0d9488 !important; grid-column: span 2; padding: 14px 6px !important; font-size: 0.95em; }
 
 /* ==========================================================================
    RESÚMENES MENSUALES Y COPIAS
