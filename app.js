@@ -1,24 +1,30 @@
 // ------------------ Inicialización del Estado Global ------------------
+// 1. Declaración de variables globales
 let cacheDatos = JSON.parse(localStorage.getItem('calendario_datos')) || {};
 let fechaActual = new Date();
 let mes = fechaActual.getMonth();
 let año = fechaActual.getFullYear();
 let fechaSeleccionadaGlobal = null;
-
 const nombresMes = ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"];
 
-// Selectores del DOM
-const calendar = document.getElementById("calendar");
-const mesActualTexto = document.getElementById("mesActual");
-const formulario = document.getElementById("formulario");
-const fechaSeleccionadaTxt = document.getElementById("fechaSeleccionada");
-const tipoSelect = document.getElementById("tipo");
-const notasTextArea = document.getElementById("notas");
-const inputEntrada = document.getElementById("manualEntrada");
-const inputSalida = document.getElementById("manualSalida");
-const inputConduccion = document.getElementById("manualConduccion");
-const inputOtrosTrabajos = document.getElementById("manualOtrosTrabajos");
-const listaTurnos = document.getElementById("listaTurnos"); 
+// 2. Objeto global UI
+window.UI = {};
+
+// 3. Inicialización única y segura
+document.addEventListener("DOMContentLoaded", () => {
+    // Mapeo de IDs a nuestro objeto UI
+    const ids = ["calendar", "mesActual", "formulario", "fechaSeleccionada", "tipo", 
+                 "notas", "manualEntrada", "manualSalida", "manualConduccion", 
+                 "manualOtrosTrabajos", "listaTurnos", "resumen", "contenedorTurnosExtra"];
+    
+    ids.forEach(id => {
+        UI[id] = document.getElementById(id);
+    });
+
+    console.log("UI inicializado correctamente");
+    generarCalendario(); // Llamada inicial necesaria
+    mostrarResumen(); // Llamada inicial para mostrar el resumen
+});
 
 // ------------------ Utilidades de Tiempo Comunes ------------------
 function parsearFechaAString(d) {
@@ -31,96 +37,89 @@ function calcularHorasEntreFichajes(h1, h2) {
     let [arrH2, arrM2] = h2.split(":").map(Number);
     let m1 = arrH1 * 60 + arrM1;
     let m2 = arrH2 * 60 + arrM2;
-    if (m2 < m1) m2 += 24 * 60; // Salto de día medianoche
+    if (m2 < m1) m2 += 24 * 60;
     return (m2 - m1) / 60;
 }
 
+// ------------------ Sistema de Turnos Partidos ------------------
+function agregarFilaExtra(ent = "", sal = "") {
+    if (!UI.contenedorTurnosExtra) return;
+    const div = document.createElement("div");
+    div.className = "turno-extra";
+    div.style = "display: flex; gap: 5px; margin-bottom: 5px; align-items: center; justify-content: center;";
+    div.innerHTML = `
+        <input inputmode="numeric" type="time" class="extra-ent" value="${ent}" style="background:#1e293b; color:white; border:1px solid #475569; padding:2px;">
+        <span style="color:#94a3b8;">a</span>
+        <input inputmode="numeric" type="time" class="extra-sal" value="${sal}" style="background:#1e293b; color:white; border:1px solid #475569; padding:2px;">
+        <button type="button" onclick="this.parentElement.remove()" style="background:#7f1d1d; color:white; border:none; padding:2px 6px; cursor:pointer;">x</button>
+    `;
+    UI.contenedorTurnosExtra.appendChild(div);
+}
+
 // ------------------ Construcción del Calendario Visual ------------------
-function generarCalendario(){
-    if (!calendar || !mesActualTexto) return;
+function generarCalendario() {
+    console.log("Iniciando generarCalendario..."); // Para ver si entra en la función
+    
+    if (!UI.calendar) return;
 
-    try {
-        calendar.innerHTML = "";
-        mesActualTexto.innerText = `${nombresMes[mes]} ${año}`;
+    UI.calendar.innerHTML = "";
+    UI.mesActual.innerText = `${nombresMes[mes]} ${año}`;
 
-        let diasMes = new Date(año, mes + 1, 0).getDate();
-        let primerDia = new Date(año, mes, 1).getDay();
-        if(primerDia === 0) primerDia = 7; 
+    let diasMes = new Date(año, mes + 1, 0).getDate();
+    let primerDia = new Date(año, mes, 1).getDay();
+    if(primerDia === 0) primerDia = 7; 
 
-        let objetoHoy = new Date();
-        let fechaHoyReal = parsearFechaAString(objetoHoy);
-
-        for(let i = 1; i < primerDia; i++) {
-            calendar.appendChild(document.createElement("div"));
-        }
-
-        for(let i = 1; i <= diasMes; i++){
-            try {
-                let div = document.createElement("div");
-                div.classList.add("day");
-
-                let fecha = `${año}-${String(mes+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
-                div.dataset.fecha = fecha;
-                div.addEventListener("click", () => abrirFormulario(fecha));
-
-                let objetoFecha = new Date(año, mes, i);
-                let diaSemana = objetoFecha.getDay(); 
-                if(diaSemana === 0 || diaSemana === 6) div.classList.add("fin-de-semana");
-                if(fecha === fechaHoyReal) div.classList.add("hoy-actual");
-
-                let datos = cacheDatos[fecha] || null;
-                let letra = ""; 
-
-                if(datos){
-                    let tipoDia = datos.tipo || "viajes";
-                    div.classList.add(tipoDia);
-                    
-                    letra = tipoDia==="viajes"?"V":
-                            tipoDia==="vacaciones"?"VAC":
-                            tipoDia==="festivo"?"F":
-                            tipoDia==="festivo-trabajado"?"FT":
-                            tipoDia==="urbano"?"TU":"";
-                    
-                    let horasCond = parseFloat(datos.horasConduccion) || 0;
-                    let horasOtros = parseFloat(datos.horasOtrosTrabajos) || 0;
-
-                    if(horasCond > 0 || horasOtros > 0) {
-                        letra += ` (${horasCond}h C`;
-                        if(horasOtros > 0) {
-                            letra += ` / ${horasOtros}h T`; // 🌟 CORREGIDO: Solucionado error de la variable 'letter'
-                        }
-                        letra += `)`;
-                    }
-
-                    if(datos.nota && datos.nota.trim() !== "") {
-                        let dot = document.createElement("span");
-                        dot.classList.add("indicador-nota");
-                        dot.innerHTML = "✏️";
-                        div.appendChild(dot);
-                    }
-                }
-
-                let contenedorNum = document.createElement("span");
-                contenedorNum.classList.add("num-dia");
-                contenedorNum.innerText = i;
-                div.appendChild(contenedorNum);
-
-                if(letra){
-                    let contenedorInfo = document.createElement("span");
-                    contenedorInfo.classList.add("info-turno");
-                    contenedorInfo.innerText = letra;
-                    div.appendChild(contenedorInfo);
-                }
-
-                calendar.appendChild(div);
-            } catch (errDia) {
-                console.error(errDia);
-            }
-        }
-        mostrarResumen();
-    } catch (errorFatal) {
-        console.error(errorFatal);
+    // Espaciado
+    for(let i = 1; i < primerDia; i++) {
+        UI.calendar.appendChild(document.createElement("div"));
     }
+
+    // Días
+    for(let i = 1; i <= diasMes; i++){
+        let div = document.createElement("div");
+        div.classList.add("day");
+        
+        let fecha = `${año}-${String(mes+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
+        div.dataset.fecha = fecha;
+        div.onclick = () => abrirFormulario(fecha);
+        
+        // Número del día
+        let spanNum = document.createElement("span");
+        spanNum.classList.add("num-dia");
+        spanNum.innerText = i;
+        div.appendChild(spanNum);
+
+        // Intentar pintar datos si existen
+        let datos = cacheDatos[fecha];
+       // ... dentro del if (datos) { ... } en generarCalendario
+       // Dentro de generarCalendario, reemplaza la lógica de la sigla por esta:
+if (datos) {
+    div.classList.add(datos.tipo || "viajes");
+    
+    // VERIFICACIÓN SEGURA: si datos.tipo no existe, usa "viajes" por defecto
+    let tipoSeguro = datos.tipo || "viajes";
+    
+    let sigla = "";
+    switch(tipoSeguro) {
+        case "viajes": sigla = "V"; break;
+        case "vacaciones": sigla = "VAC"; break;
+        case "festivo": sigla = "F"; break;
+        case "festivo-trabajado": sigla = "FT"; break;
+        case "normal": sigla = "TN"; break;
+        default: sigla = tipoSeguro.charAt(0).toUpperCase();
+    }
+
+    let horasAmplitud = datos.amplitud || 0;
+    
+    let info = document.createElement("span");
+    info.classList.add("info-turno");
+    info.innerText = `${sigla} (${horasAmplitud.toFixed(1)}h)`;
+    div.appendChild(info);
+}
+
+        UI.calendar.appendChild(div);
+    }
+    console.log("Calendario pintado correctamente");
 }
 
 // ------------------ Navegación de Meses ------------------
@@ -139,21 +138,26 @@ function mesSiguiente() {
 // ------------------ Operaciones del Formulario / Modal ------------------
 function abrirFormulario(fecha) {
     fechaSeleccionadaGlobal = fecha;
-    let parts = fecha.split("-");
-    fechaSeleccionadaTxt.innerText = `${parts[2]}/${parts[1]}/${parts[0]}`;
+    console.log("Fecha seleccionada ahora es:"  , fechaSeleccionadaGlobal);
+    const [y, m, d] = fecha.split("-");
+    UI.fechaSeleccionada.innerText = `${d}/${m}/${y}`;
 
-    let datos = cacheDatos[fecha] || {};
-    tipoSelect.value = datos.tipo || "viajes";
-    notasTextArea.value = datos.nota || "";
-    inputEntrada.value = datos.entrada || "06:00";
-    inputSalida.value = datos.salida || "19:30";
-    inputConduccion.value = datos.horasConduccion !== undefined ? datos.horasConduccion : "";
-    inputOtrosTrabajos.value = datos.horasOtrosTrabajos !== undefined ? datos.horasOtrosTrabajos : "";
+    const datos = cacheDatos[fecha] || {};
+    
+    // Asignación directa
+    UI.tipo.value = datos.tipo || "viajes";
+    UI.notas.value = datos.nota || "";
+    UI.manualEntrada.value = datos.entrada || "06:00";
+    UI.manualSalida.value = datos.salida || "19:30";
+    UI.manualConduccion.value = datos.horasConduccion ?? "";
+    UI.manualOtrosTrabajos.value = datos.horasOtrosTrabajos ?? "";
+
+    // Turnos extra
+    UI.contenedorTurnosExtra.innerHTML = "";
+    (datos.turnosExtra || []).forEach(t => agregarFilaExtra(t.ent, t.sal));
 
     actualizarPanelTurnosSuperior(datos);
-
-    formulario.classList.remove("hidden");
-    actualizarContadorTiempoReal();
+    UI.formulario.classList.remove("hidden");
 }
 
 function cerrar() {
@@ -165,7 +169,12 @@ function actualizarPanelTurnosSuperior(datos) {
         if (datos.entrada && datos.salida) {
             let hCond = datos.horasConduccion || 0;
             let hOtros = datos.horasOtrosTrabajos || 0;
-            listaTurnos.innerHTML = `⏱️ Jornada: de <b>${datos.entrada}</b> a <b>${datos.salida}</b><br>💾 Conducción: <b>${hCond}h</b> | Otros: <b>${hOtros}h</b>`;
+            let extrasHtml = "";
+            if (datos.turnosExtra && datos.turnosExtra.length > 0) {
+                extrasHtml = "<br>➕ Turnos partidos: " +
+                    datos.turnosExtra.map(t => `${t.ent}-${t.sal}`).join(", ");
+            }
+            listaTurnos.innerHTML = `⏱️ Jornada: de <b>${datos.entrada}</b> a <b>${datos.salida}</b>${extrasHtml}<br>💾 Conducción: <b>${hCond}h</b> | Otros: <b>${hOtros}h</b>`;
         } else {
             listaTurnos.innerHTML = `🔮 Sin actividad registrada hoy. Tienes margen seguro para fichar.`;
         }
@@ -176,53 +185,66 @@ function guardarTipo() {
     if (!fechaSeleccionadaGlobal) return;
     if (!cacheDatos[fechaSeleccionadaGlobal]) cacheDatos[fechaSeleccionadaGlobal] = {};
 
-    cacheDatos[fechaSeleccionadaGlobal].tipo = tipoSelect.value;
-    cacheDatos[fechaSeleccionadaGlobal].nota = notasTextArea.value;
+    cacheDatos[fechaSeleccionadaGlobal].tipo = UI.tipo.value; // CAMBIADO
+    cacheDatos[fechaSeleccionadaGlobal].nota = UI.notas.value; // CAMBIADO
 
     localStorage.setItem('calendario_datos', JSON.stringify(cacheDatos));
     cerrar();
     generarCalendario();
+    mostrarResumen(); // Actualizamos el resumen tras guardar
 }
 
 // ------------------ Sistema de Fichajes Dinámicos en Tiempo Real ------------------
 function ficharEntrada() {
     if (!fechaSeleccionadaGlobal) return;
+    const horaStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
     
-    const ahora = new Date();
-    const horaStr = `${String(ahora.getHours()).padStart(2, '0')}:${String(ahora.getMinutes()).padStart(2, '0')}`;
-    
-    inputEntrada.value = horaStr;
+    UI.manualEntrada.value = horaStr;
     
     if (!cacheDatos[fechaSeleccionadaGlobal]) cacheDatos[fechaSeleccionadaGlobal] = {};
+    
     cacheDatos[fechaSeleccionadaGlobal].entrada = horaStr;
-    cacheDatos[fechaSeleccionadaGlobal].tipo = tipoSelect.value;
-    cacheDatos[fechaSeleccionadaGlobal].nota = notasTextArea.value;
+    // Aseguramos que guarde el tipo seleccionado en el UI
+    cacheDatos[fechaSeleccionadaGlobal].tipo = UI.tipo.value;
     
     localStorage.setItem('calendario_datos', JSON.stringify(cacheDatos));
     actualizarPanelTurnosSuperior(cacheDatos[fechaSeleccionadaGlobal]);
-    
-    cerrar();
     generarCalendario();
+    mostrarResumen(); // Actualizamos el resumen tras fichar
+    cerrar();
 }
 
 function ficharSalida() {
-    if (!fechaSeleccionadaGlobal) return;
+    if (!fechaSeleccionadaGlobal) {
+        alert("Error: Debes abrir un día antes de fichar.");
+        return;
+    }
     
     const ahora = new Date();
     const horaStr = `${String(ahora.getHours()).padStart(2, '0')}:${String(ahora.getMinutes()).padStart(2, '0')}`;
     
-    inputSalida.value = horaStr;
+    UI.manualSalida.value = horaStr;
     
     if (!cacheDatos[fechaSeleccionadaGlobal]) cacheDatos[fechaSeleccionadaGlobal] = {};
+    
     cacheDatos[fechaSeleccionadaGlobal].salida = horaStr;
-    cacheDatos[fechaSeleccionadaGlobal].tipo = tipoSelect.value;
-    cacheDatos[fechaSeleccionadaGlobal].nota = notasTextArea.value;
+    cacheDatos[fechaSeleccionadaGlobal].tipo = UI.tipo.value;
+    
+    // Cálculo de amplitud
+    if (cacheDatos[fechaSeleccionadaGlobal].entrada) {
+        cacheDatos[fechaSeleccionadaGlobal].amplitud = calcularHorasEntreFichajes(
+            cacheDatos[fechaSeleccionadaGlobal].entrada, 
+            horaStr
+        );
+    }
     
     localStorage.setItem('calendario_datos', JSON.stringify(cacheDatos));
-    actualizarPanelTurnosSuperior(cacheDatos[fechaSeleccionadaGlobal]);
+    console.log("Fichaje salida guardado en:", fechaSeleccionadaGlobal);
     
-    cerrar();
+    actualizarPanelTurnosSuperior(cacheDatos[fechaSeleccionadaGlobal]);
     generarCalendario();
+    mostrarResumen(); // Actualizamos el resumen tras fichar
+    cerrar();
 }
 
 function eliminarDia() {
@@ -230,100 +252,152 @@ function eliminarDia() {
     delete cacheDatos[fechaSeleccionadaGlobal];
     localStorage.setItem('calendario_datos', JSON.stringify(cacheDatos));
     cerrar();
+    mostrarResumen(); // Actualizamos el resumen tras eliminar
     generarCalendario();
 }
 
-// ------------------ Registro de Jornadas Manuales con Validación Estricta ------------------
+// ------------------ Registro de Jornadas Manuales con Validación Estricta (incluye Turnos Partidos) ------------------
 function aplicarHorarioManual() {
-    if (!fechaSeleccionadaGlobal) return;
+    if (!fechaSeleccionadaGlobal) {
+        console.error("No hay fecha seleccionada");
+        return;
+    }
 
-    let hEntrada = inputEntrada.value;
-    let hSalida = inputSalida.value;
-    
+    // 1. Obtener valores de la interfaz
+    let hEntrada = UI.manualEntrada.value;
+    let hSalida = UI.manualSalida.value;
+
+    if (!hEntrada || !hSalida) {
+        alert("Por favor, rellena al menos la entrada y la salida.");
+        return;
+    }
+
     let amplitudTotal = calcularHorasEntreFichajes(hEntrada, hSalida);
+    let extras = [];
 
-    let hCond = parseFloat(inputConduccion.value) || 0;
-    let hOtros = parseFloat(inputOtrosTrabajos.value) || 0;
+    // 2. Procesar turnos extra si existen
+    const filasExtra = document.querySelectorAll(".turno-extra");
+    filasExtra.forEach(fila => {
+        let ent = fila.querySelector('.extra-ent').value;
+        let sal = fila.querySelector('.extra-sal').value;
+        if (ent && sal) {
+            amplitudTotal += calcularHorasEntreFichajes(ent, sal);
+            extras.push({ ent, sal });
+        }
+    });
+
+    let hCond = parseFloat(UI.manualConduccion.value) || 0;
+    let hOtros = parseFloat(UI.manualOtrosTrabajos.value) || 0;
     let sumaIntroducida = hCond + hOtros;
 
     let diferencia = amplitudTotal - sumaIntroducida;
 
-    if (Math.abs(diferencia) > 0.02) { 
-        let totalMinutosDiferencia = Math.round(diferencia * 60);
-        
-        if (totalMinutosDiferencia > 0) {
-            let hDesc = Math.floor(totalMinutosDiferencia / 60);
-            let mDesc = totalMinutosDiferencia % 60;
-            let textoFalta = hDesc > 0 ? `${hDesc}h y ${mDesc}min` : `${mDesc}min`;
-            
-            alert(`⚠️ No se puede guardar:\n\nLa amplitud total de tu jornada es de ${amplitudTotal.toFixed(2)}h.\nHas introducido ${hCond}h de conducción y ${hOtros}h de otros trabajos.\n\nTe falta por asignar exactamente: ${textoFalta}.`);
-        } else {
-            let totalMinutosSobrantes = Math.abs(totalMinutosDiferencia);
-            let hDesc = Math.floor(totalMinutosSobrantes / 60);
-            let mDesc = totalMinutosSobrantes % 60;
-            let textoSobra = hDesc > 0 ? `${hDesc}h y ${mDesc}min` : `${mDesc}min`;
-            
-            alert(`⚠️ No se puede guardar:\n\nTe has pasado asignando horas.\nLa amplitud real de tu jornada es de ${amplitudTotal.toFixed(2)}h, pero has metido una suma de ${sumaIntroducida.toFixed(2)}h.\n\nTe sobran exactamente: ${textoSobra}.`);
+    // 3. Validación estricta
+    if (Math.abs(diferencia) > 0.05) { // Un margen de 3 minutos (0.05h) es más razonable
+       let totalMinutos = Math.round(Math.abs(diferencia) * 60);
+       let horas = Math.floor(totalMinutos / 60);
+       let minutos = totalMinutos % 60;
+       let tiempoFormateado = horas > 0 ? `${horas}h ${minutos}m` : `${minutos}m`;
+       
+       if (diferencia > 0) {
+        alert(`⚠️ Faltan horas por asignar:\n\n` +
+                  `Amplitud total de jornada: ${amplitudTotal.toFixed(2)}h\n` +
+                  `Suma introducida: ${sumaIntroducida.toFixed(2)}h\n\n` +
+                  `Para cuadrar la jornada, te falta por asignar: ${tiempoFormateado}.`);
+    }else { 
+        alert(`⚠️ Te has pasado asignando horas:\n\n` +
+                  `Amplitud total de jornada: ${amplitudTotal.toFixed(2)}h\n` +
+                  `Suma introducida: ${sumaIntroducida.toFixed(2)}h\n\n` +
+                  `Te sobran exactamente: ${tiempoFormateado}.`);
         }
-        return; 
+        return; // Detener el guardado si hay discrepancia
     }
 
+    // 4. Guardar
     cacheDatos[fechaSeleccionadaGlobal] = {
-        tipo: tipoSelect.value,
-        nota: notasTextArea.value,
+        tipo: UI.tipo.value,
+        nota: UI.notas.value,
         entrada: hEntrada,
         salida: hSalida,
         horasConduccion: hCond,
         horasOtrosTrabajos: hOtros,
+        turnosExtra: extras,
         amplitud: amplitudTotal
+        
     };
 
     localStorage.setItem('calendario_datos', JSON.stringify(cacheDatos));
-    cerrar();
+    
+    // 5. Cerrar y actualizar
+    if (typeof cerrar === 'function') cerrar();
     generarCalendario();
+    mostrarResumen(); // Actualizamos el resumen tras guardar
+    console.log("Horario guardado correctamente");
 }
 
 function aplicarUrbanoAutomatico() {
-    if (!fechaSeleccionadaGlobal) return;
+    if (!fechaSeleccionadaGlobal) {
+        alert("Selecciona un día primero.");
+        return;
+    }
 
+    // Definimos los datos correctamente una sola vez
     cacheDatos[fechaSeleccionadaGlobal] = {
-        tipo: "urbano",
-        nota: notasTextArea.value,
+        tipo: "urbano", // <--- CORREGIDO: Ahora sí es urbano
+        nota: "Horario Urbano Automático",
         entrada: "07:15",
         salida: "15:15",
-        horasConduccion: 8.0,
-        horasOtrosTrabajos: 0,
-        amplitud: 8.0
+        horasConduccion: 7.25, 
+        horasOtrosTrabajos: 0.75,
+        turnosExtra: [],
+        amplitud: 8
     };
 
+    // Guardar en localStorage
     localStorage.setItem('calendario_datos', JSON.stringify(cacheDatos));
-    cerrar();
+    
+    // Actualizar interfaz
     generarCalendario();
+    mostrarResumen(); // Ahora el resumen contará correctamente el tipo "urbano"
+    cerrar();
+    
+    console.log("Horario urbano aplicado correctamente a:", fechaSeleccionadaGlobal);
+}
+
+function decimalAHora(decimal) {
+    if (isNaN(decimal) || decimal === 0) return "0:00";
+    let horas = Math.floor(decimal);
+    let minutos = Math.round((decimal - horas) * 60);
+    // Asegura que los minutos siempre tengan 2 dígitos (ej: 05 en lugar de 5)
+    return `${horas}:${minutos.toString().padStart(2, '0')}h`;
 }
 
 // ------------------ Sistema Analítico de Tiempos y Alertas Bisemanales/Semanales ------------------
 function mostrarResumen() {
-    const resumenDiv = document.getElementById("resumen");
-    if (!resumenDiv) return;
+    if (!UI.resumen) return;
 
     let totalConduccionMes = 0;
     let totalOtrosTrabajosMes = 0;
     let viajesRegistrados = 0;
     let festivosTrabajados = 0;
     let vacaciones = 0;
+    let normal = 0;
     let urbano = 0;
 
     for (let f in cacheDatos) {
         let parts = f.split("-");
         if (parseInt(parts[0]) === año && parseInt(parts[1]) === (mes + 1)) {
             let d = cacheDatos[f];
+            
+            // Sumamos los valores del objeto guardado
             totalConduccionMes += parseFloat(d.horasConduccion) || 0;
             totalOtrosTrabajosMes += parseFloat(d.horasOtrosTrabajos) || 0;
 
             if (d.tipo === "viajes") viajesRegistrados++;
-            if (d.tipo === "festivo-trabajado") festivosTrabajados++;
-            if (d.tipo === "vacaciones") vacaciones++;
-            if (d.tipo === "urbano") urbano++;
+            else if (d.tipo === "festivo-trabajado") festivosTrabajados++;
+            else if (d.tipo === "vacaciones") vacaciones++;
+            else if (d.tipo === "normal") normal++;
+            else if (d.tipo === "urbano") urbano++;
         }
     }
 
@@ -331,7 +405,7 @@ function mostrarResumen() {
 
     // --- ALGORITMO BISEMANAL MÓVIL ---
     let maxBisemanalDetectado = 0;
-    let objetoFechaBase = new Date(año, mes, 15); 
+    let objetoFechaBase = new Date(año, mes, 15);
 
     for (let desplazamiento = -20; desplazamiento <= 20; desplazamiento++) {
         let testFecha = new Date(objetoFechaBase);
@@ -346,92 +420,97 @@ function mostrarResumen() {
                 acumulado14Dias += parseFloat(cacheDatos[strF].horasConduccion) || 0;
             }
         }
-        if (acumulado14Dias > maxBisemanalDetectado) {
-            maxBisemanalDetectado = acumulado14Dias;
-        }
+        if (acumulado14Dias > maxBisemanalDetectado) maxBisemanalDetectado = acumulado14Dias;
     }
 
-    // --- ALGORITMO DE CONTADOR DE AMPLIACIONES SEMANALES ---
+    // --- ALGORITMO DE AMPLIACIONES SEMANALES ---
     let ampliacionesEstaSemana = 0;
     let hoy = new Date();
     let diaSemanaHoy = hoy.getDay();
-    if(diaSemanaHoy === 0) diaSemanaHoy = 7; 
-    
+    if (diaSemanaHoy === 0) diaSemanaHoy = 7;
     let lunesSemana = new Date(hoy);
     lunesSemana.setDate(hoy.getDate() - (diaSemanaHoy - 1));
 
-    for(let k = 0; k < 7; k++) {
+    for (let k = 0; k < 7; k++) {
         let loopDia = new Date(lunesSemana);
         loopDia.setDate(lunesSemana.getDate() + k);
         let stringDiaSem = parsearFechaAString(loopDia);
-        
-        if(cacheDatos[stringDiaSem]) {
+        if (cacheDatos[stringDiaSem]) {
             let condDia = parseFloat(cacheDatos[stringDiaSem].horasConduccion) || 0;
-            if(condDia > 9.0) {
-                ampliacionesEstaSemana++;
-            }
+            if (condDia > 9.0) ampliacionesEstaSemana++;
         }
     }
 
-    // --- RENDERIZACIÓN DE ALERTAS DINÁMICAS ---
+    // --- RENDERIZACIÓN DE ALERTAS ---
     let tarjetaAlertas = "";
 
+    // 1. Alerta Bisemanal
     if (maxBisemanalDetectado > 90) {
-        tarjetaAlertas += `
-            <div style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5; padding: 12px; border-radius: 10px; font-size: 0.9em; margin-bottom: 10px;">
-                🚨 <b>Exceso Bisemanal Detectado:</b> Llevas acumulado un pico de <b>${maxBisemanalDetectado.toFixed(1)}h</b> de conducción en un bloque quincenal. (Máximo legal 90h). ¡Peligro de sanción!
-            </div>
-        `;
+        tarjetaAlertas += `<div style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5; padding: 12px; border-radius: 10px; font-size: 0.9em; margin-bottom: 10px;">🚨 <b>¡Exceso Bisemanal!</b> Llevas <b>${maxBisemanalDetectado.toFixed(1)}h</b> de conducción.</div>`;
     } else {
         let margenQ = 90 - maxBisemanalDetectado;
-        tarjetaAlertas += `
-            <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #a7f3d0; padding: 12px; border-radius: 10px; font-size: 0.9em; margin-bottom: 10px;">
-                📅 <b>Control Quincenal:</b> El pico máximo detectado es de <b>${maxBisemanalDetectado.toFixed(1)}h</b>. Te queda un margen seguro de <b>${margenQ.toFixed(1)}h</b> de conducción volante.
-            </div>
-        `;
+        tarjetaAlertas += `<div style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; color: #a7f3d0; padding: 12px; border-radius: 10px; font-size: 0.9em; margin-bottom: 10px;">📅 <b>Control Quincenal:</b> Margen de <b>${margenQ.toFixed(1)}h</b>.</div>`;
     }
 
-    if(ampliacionesEstaSemana >= 2) {
-        tarjetaAlertas += `
-            <div style="background: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; color: #fde68a; padding: 12px; border-radius: 10px; font-size: 0.9em; margin-bottom: 10px;">
-                ⚠️ <b>Ampliaciones Semanales Agotadas:</b> Ya has realizado <b>${ampliacionesEstaSemana}</b> jornadas de conducción de más de 9h esta semana. Límite estricto para los días restantes de esta semana: **9h 00m**.
-            </div>
-        `;
+    // 2. Alerta Ampliaciones
+    if (ampliacionesEstaSemana >= 2) {
+        tarjetaAlertas += `<div style="background: rgba(245, 158, 11, 0.2); border: 1px solid #f59e0b; color: #fde68a; padding: 12px; border-radius: 10px; font-size: 0.9em; margin-bottom: 10px;">⚠️ <b>Ampliaciones Agotadas.</b></div>`;
     } else {
-        let restantesAmp = 2 - ampliacionesEstaSemana;
-        tarjetaAlertas += `
-            <div style="background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; color: #bae6fd; padding: 12px; border-radius: 10px; font-size: 0.9em; margin-bottom: 10px;">
-                🧵 <b>Ampliaciones a 10h:</b> Llevas <b>${ampliacionesEstaSemana}/2</b> esta semana. Puedes ampliar tu jornada diaria de conducción hasta las 10h un total de <b>${restantesAmp} vez/veces</b> más antes del Domingo.
-            </div>
-        `;
+        tarjetaAlertas += `<div style="background: rgba(56, 189, 248, 0.15); border: 1px solid #38bdf8; color: #bae6fd; padding: 12px; border-radius: 10px; font-size: 0.9em; margin-bottom: 10px;">🧵 <b>Ampliaciones:</b> Te quedan <b>${2 - ampliacionesEstaSemana}</b>.</div>`;
     }
 
-    resumenDiv.innerHTML = `
+ // --- AUDITORÍA DE SEGURIDAD (NORMATIVA 6 DÍAS) ---
+let rachaMaxima = 0;
+let rachaActual = 0;
+let fechaAnterior = null;
+
+let fechasOrdenadas = Object.keys(cacheDatos).sort();
+
+for (let f of fechasOrdenadas) {
+    let dia = cacheDatos[f];
+    let fechaActual = new Date(f);
+    fechaActual.setHours(0,0,0,0);
+
+    // Tipos que rompen la racha
+    const esDescanso = ["vacaciones", "festivo", "descanso"].includes(dia.tipo);
+
+    if (dia && !esDescanso) {
+        if (fechaAnterior !== null) {
+            let difDias = (fechaActual - fechaAnterior) / (1000 * 60 * 60 * 24);
+            if (difDias > 1) rachaActual = 0; // Se resetea si hay salto
+        }
+        rachaActual++;
+        fechaAnterior = fechaActual;
+        if (rachaActual > rachaMaxima) rachaMaxima = rachaActual;
+    } else {
+        rachaActual = 0;
+        fechaAnterior = null;
+    }
+}
+
+// --- INTEGRACIÓN DE LA ALERTA ---
+// FORZAMOS la alerta si la racha histórica máxima es >= 6
+if (rachaMaxima >= 7) {
+    tarjetaAlertas += `
+        <div style="background: rgba(239, 68, 68, 0.2); border: 1px solid #ef4444; color: #fca5a5; padding: 12px; border-radius: 10px; font-size: 0.9em; margin-bottom: 10px;">
+            🛑 <b>¡Aviso Normativa!</b> Has detectado un bloque de trabajo de <b>${rachaMaxima} días</b>. Revisa tu descanso semanal obligatorio.
+        </div>
+    `;
+}
+
+    // --- RENDERIZACIÓN FINAL ---
+    UI.resumen.innerHTML = `
         <div style="background: #1e293b; color: white; padding: 15px; border-radius: 12px; margin-top: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.05);">
-            <h3 style="margin-top: 0; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 8px; color: #38bdf8; font-size: 1.1em;">📊 Resumen de ${nombresMes[mes]} ${año}</h3>
-            
-            <div style="display: flex; justify-content: space-between; margin: 8px 0; font-size: 0.95em;">
-                <span style="color: #38bdf8; font-weight: bold;">🧵 Conducción Volante:</span>
-                <span style="font-weight: bold;">${totalConduccionMes.toFixed(1)}h</span>
+            <h3 style="margin-top: 0; color: #38bdf8; font-size: 1.1em;">📊 Resumen de ${nombresMes[mes]} ${año}</h3>
+            <div style="margin: 8px 0;">🧵 Conducción: <b>${decimalAHora(totalConduccionMes)}</b></div>
+            <div style="margin: 8px 0;">⚒️ Otros Trabajos: <b>${decimalAHora(totalOtrosTrabajosMes)}</b></div>
+            <div style="margin: 8px 0; color: #4ade80;">💼 TOTAL: <b>${decimalAHora(totalHorasTrabajadasMes)}</b></div>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin: 12px 0; font-size: 0.85em;">
+                <div>✈️ Viajes: <b>${viajesRegistrados}</b></div>
+                <div>🏢 Urbanos: <b>${urbano}</b></div>
+                <div>🎉 Festivos: <b>${festivosTrabajados}</b></div>
+                <div>🏖️ Vacaciones: <b>${vacaciones}</b></div>
             </div>
-            <div style="display: flex; justify-content: space-between; margin: 8px 0; font-size: 0.95em;">
-                <span style="color: #f97316; font-weight: bold;">⚒️ Otros Trabajos / Esperas:</span>
-                <span style="font-weight: bold;">${totalOtrosTrabajosMes.toFixed(1)}h</span>
-            </div>
-            <div style="display: flex; justify-content: space-between; margin: 8px 0; padding-top: 6px; border-top: 1px dashed rgba(255,255,255,0.1); font-size: 1.05em;">
-                <span style="color: #4ade80; font-weight: bold;">💼 TRABAJO TOTAL TOTAL:</span>
-                <span style="color: #4ade80; font-weight: bold;">${totalHorasTrabajadasMes.toFixed(1)}h</span>
-            </div>
-
-            <hr style="border: none; border-top: 1px solid rgba(255,255,255,0.1); margin: 12px 0;">
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; font-size: 0.85em; color: #cbd5e1; margin-bottom: 12px;">
-                <div>✈️ Viajes Registrados: <b>${viajesRegistrados}</b></div>
-                <div>🏢 Trabajos Urbanos: <b>${urbano}</b></div>
-                <div>🎉 Festivos Trabajados: <b>${festivosTrabajados}</b></div>
-                <div>🏖️ Días Vacaciones: <b>${vacaciones}</b></div>
-            </div>
-
             ${tarjetaAlertas}
         </div>
     `;
@@ -439,6 +518,6 @@ function mostrarResumen() {
 
 function actualizarContadorTiempoReal() {}
 
-document.addEventListener("DOMContentLoaded", () => {
-    generarCalendario();
-});
+// En tu objeto UI dentro del DOMContentLoaded:
+UI.resumen = document.getElementById("resumen");
+

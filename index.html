@@ -41,8 +41,9 @@
             <option value="vacaciones">Vacaciones</option>
             <option value="festivo">Festivo</option>
             <option value="festivo-trabajado">Festivo trabajado</option>
-            <option value="urbano">Trabajo urbano</option>
+            <option value="normal">Trabajo normal</option>
         </select>
+        
 
         <label>Notas:</label>
         <textarea id="notas" rows="3" placeholder="Escribe aquí tus notas..."></textarea>
@@ -61,6 +62,11 @@
                     <input type="time" id="manualSalida" value="20:00" style="background: #1e293b; color: white; border: 1px solid #475569; padding: 6px; border-radius: 6px; font-size: 0.95em; text-align: center;">
                 </div>
             </div>
+
+            <div id="contenedorTurnosExtra" style="margin-bottom: 10px;"></div>
+            <button type="button" onclick="agregarFilaExtra()" style="width: 100%; margin-bottom: 10px; background: #475569; color: white; border: none; padding: 5px; border-radius: 4px; font-size: 0.8em; cursor: pointer;">
+                + Añadir otro turno (Partido)
+            </button>
 
             <div style="display: flex; gap: 10px; margin-bottom: 12px; box-sizing: border-box;">
                 <div style="flex: 1; text-align: center;">
@@ -88,8 +94,9 @@
             <button class="btn-eliminar" onclick="eliminarDia()">🗑️ Eliminar Día</button>
             <button class="btn-cancelar" onclick="cerrar()">❌ Cancelar</button>
             <button class="btn-guardar" onclick="guardarTipo()">💾 Guardar Tipo y Notas</button>
-        </div>
 
+
+        </div>
     </div> 
 </div>
 

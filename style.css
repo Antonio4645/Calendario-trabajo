@@ -198,15 +198,19 @@ body {
 .day.festivo-trabajado { background-color: #a21caf !important; border: none; }
 .day.festivo-trabajado .info-turno { color: #fdfdfd !important; } 
 
-.day.urbano { background-color: #050505 !important; border: none; }
-.day.urbano .info-turno { color: #f5f5ff !important; } 
+.day.normal { background-color: #ec0202 !important; border: none; }
+.day.normal .info-turno { color: #f5f5ff !important; } 
+
+.day.urbano { background-color: #000000 !important; border: none; }
+.day.urbano .info-turno { color: #f8fafc !important; }
 
 /* Forzar que el número siempre conserve brillo blanco/amarillo en días con turnos */
 .day.viajes .num-dia,
 .day.vacaciones .num-dia,
 .day.festivo .num-dia,
 .day.festivo-trabajado .num-dia,
-.day.urbano .num-dia {
+.day.urbano .num-dia,
+.day.normal .num-dia {
     color: #e9fa01 !important;
     opacity: 1;
 }
@@ -375,6 +379,7 @@ body {
     flex-direction: column;
     gap: 12px;
     padding-bottom: 30px;
+    margin-bottom: 60px;
 }
 
 .mes-card {
@@ -404,4 +409,8 @@ body {
 .dato span:last-child {
     font-weight: bold;
     color: #f8fafc;
+}
+
+.hidden {
+    display: none !important;
 }
