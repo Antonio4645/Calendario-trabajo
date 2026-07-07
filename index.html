@@ -28,7 +28,10 @@
 <div id="calendar"></div>
 
 <div id="formulario" class="hidden">
-    <div class="contenido-modal"> <h2 id="fechaSeleccionada"></h2>
+    <div class="contenido-modal"> 
+        <h2 id="fechaSeleccionada"></h2>
+
+        <div id="contador-tiempo-real"></div>
 
         <div id="listaTurnos"></div>
 
@@ -44,6 +47,24 @@
         <label>Notas:</label>
         <textarea id="notas" rows="3" placeholder="Escribe aquí tus notas..."></textarea>
 
+        <div style="margin: 15px 0; background: rgba(255,255,255,0.05); padding: 12px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1); box-sizing: border-box;">
+            <p style="margin: 0 0 8px 0; font-size: 0.85em; color: #94a3b8; font-weight: bold; text-align: center;">⚙️ Ajustar Horario Manual (Pruebas / Corrección)</p>
+            <div style="display: flex; gap: 15px; justify-content: center; align-items: center; margin-bottom: 10px;">
+                <div style="text-align: center;">
+                    <span style="font-size: 0.75em; color: #cbd5e1; display: block; margin-bottom: 2px;">Entrada</span>
+                    <input type="time" id="manualEntrada" value="06:00" style="background: #1e293b; color: white; border: 1px solid #475569; padding: 6px; border-radius: 6px; font-size: 0.95em; text-align: center;">
+                </div>
+                <div style="font-weight: bold; color: #64748b; margin-top: 15px;">a</div>
+                <div style="text-align: center;">
+                    <span style="font-size: 0.75em; color: #cbd5e1; display: block; margin-bottom: 2px;">Salida</span>
+                    <input type="time" id="manualSalida" value="20:00" style="background: #1e293b; color: white; border: 1px solid #475569; padding: 6px; border-radius: 6px; font-size: 0.95em; text-align: center;">
+                </div>
+            </div>
+            <button type="button" onclick="aplicarHorarioManual()" style="width: 100%; background: #2563eb; color: white; border: none; padding: 10px; font-size: 0.85em; font-weight: bold; border-radius: 8px; cursor: pointer; box-shadow: 0 2px 4px rgba(0,0,0,0.2);">
+                💾 Aplicar Horario Manual
+            </button>
+        </div>
+
         <div class="grid-botones">
             <button type="button" onclick="aplicarUrbanoAutomatico()" style="grid-column: span 2; background: #34495e; border: 1px solid #4f5b66;">
                 🏢 Aplicar Horario Urbano (07:15 - 15:15)
@@ -56,7 +77,8 @@
             <button class="btn-guardar" onclick="guardarTipo()">💾 Guardar Tipo y Notas</button>
         </div>
 
-    </div> </div>
+    </div> 
+</div>
 
 <div id="resumen"></div>
 

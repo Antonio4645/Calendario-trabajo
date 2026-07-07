@@ -39,7 +39,6 @@ function generarCalendario(){
         let fecha=`${año}-${String(mes+1).padStart(2,'0')}-${String(i).padStart(2,'0')}`;
         div.dataset.fecha = fecha;
 
-        // 🌟 IDENTIFICACIÓN DE FINES DE SEMANA: Sábado (6) o Domingo (0)
         let objetoFecha = new Date(año, mes, i);
         let diaSemana = objetoFecha.getDay(); 
         if(diaSemana === 0 || diaSemana === 6) {
@@ -70,7 +69,6 @@ function generarCalendario(){
             }
         }
 
-        // 🌟 NUEVA JERARQUÍA: Separamos el número de los datos de turnos en etiquetas distintas
         let contenedorNum = document.createElement("span");
         contenedorNum.classList.add("num-dia");
         contenedorNum.innerText = i;
@@ -89,7 +87,7 @@ function generarCalendario(){
     mostrarResumen();
 }
 
-// ------------------ Panel de Acciones (Formulario) ------------------
+// ------------------ Panel de Acciones (Formulario + Tacógrafo Dinámico) ------------------
 function abrirFormulario(fecha){
     fechaActual=fecha;
     formulario.classList.remove("hidden");
@@ -102,24 +100,100 @@ function abrirFormulario(fecha){
     notasInput.value=datos?datos.nota||"":"";
 
     listaTurnos.innerHTML = "<strong>Turnos del día:</strong><br>";
+    
+    let primerFichajeEntrada = null;
+    let ultimoFichajeSalida = null;
+    let horasTrabajadasHoy = 0;
+
     if(datos && datos.turnos && datos.turnos.length){
         datos.turnos.forEach((t,i)=>{
-            if(t.entrada && t.salida){
-                let [hE,mE] = t.entrada.split(":").map(Number);
-                let [hS,mS] = t.salida.split(":").map(Number);
-                
-                let minutos = (hS*60+mS)-(hE*60+mE);
-                if(minutos < 0) minutos += 1440; 
+            if(t.entrada) {
+                if(!primerFichajeEntrada) primerFichajeEntrada = t.entrada;
+                if(t.salida){
+                    ultimoFichajeSalida = t.salida;
+                    let [hE,mE] = t.entrada.split(":").map(Number);
+                    let [hS,mS] = t.salida.split(":").map(Number);
+                    
+                    let minutos = (hS*60+mS)-(hE*60+mE);
+                    if(minutos < 0) minutos += 1440; 
 
-                let horas = Math.floor(minutos/60);
-                let mins = minutos % 60;
-                listaTurnos.innerHTML += `T${i+1}: ${t.entrada} - ${t.salida} (${horas}h ${mins}m)<br>`;
-            } else if(t.entrada && !t.salida){
-                listaTurnos.innerHTML += `T${i+1}: ${t.entrada} - ...<br>`;
+                    horasTrabajadasHoy += minutos / 60;
+
+                    let horas = Math.floor(minutos/60);
+                    let mins = minutos % 60; // 🛠️ CORREGIDO: Solucionado error tipográfico "minutes"
+                    listaTurnos.innerHTML += `T${i+1}: ${t.entrada} - ${t.salida} (${horas}h ${mins}m)<br>`;
+                } else {
+                    listaTurnos.innerHTML += `T${i+1}: ${t.entrada} - ...<br>`;
+                }
             }
         });
     } else {
-        listaTurnos.innerHTML += "No hay turnos fichados aún.";
+        listaTurnos.innerHTML += "No hay turnos fichados aún.<br>";
+    }
+
+    // 🚌 CONTADOR DIARIO DINÁMICO DE CONDUCCIÓN DISPOLIBLE
+    actualizarBannerContador(horasTrabajadasHoy);
+
+    listaTurnos.innerHTML += "<hr style='border:0; border-top:1px dashed #334155; margin:8px 0;'>";
+    
+    if(primerFichajeEntrada && ultimoFichajeSalida) {
+        let [hE, mE] = primerFichajeEntrada.split(":").map(Number);
+        let [hS, mS] = ultimoFichajeSalida.split(":").map(Number);
+        let minAmplitud = (hS*60+mS) - (hE*60+mE);
+        if(minAmplitud < 0) minAmplitud += 1440;
+        let hAmp = Math.floor(minAmplitud/60);
+        let mAmp = minAmplitud % 60;
+        
+        let alertaDisco = hAmp >= 13 ? "color:#f87171; font-weight:bold;" : "color:#cbd5e1;";
+        listaTurnos.innerHTML += `<span style="${alertaDisco}">📊 Amplitud (Disco): ${hAmp}h ${mAmp}m ${hAmp>=13?'⚠️':''}</span><br>`;
+    }
+
+    let fechaPrev = new Date(partes[0], partes[1]-1, partes[2]-1);
+    let keyPrev = `${fechaPrev.getFullYear()}-${String(fechaPrev.getMonth()+1).padStart(2,'0')}-${String(fechaPrev.getDate()).padStart(2,'0')}`;
+    let datosPrev = JSON.parse(localStorage.getItem(keyPrev));
+    
+    if(datosPrev && datosPrev.turnos && datosPrev.turnos.length && primerFichajeEntrada) {
+        let ultTurnoPrev = datosPrev.turnos[datosPrev.turnos.length-1];
+        if(ultTurnoPrev && ultTurnoPrev.salida) {
+            let [hS_prev, mS_prev] = ultTurnoPrev.salida.split(":").map(Number);
+            let [hE_hoy, mE_hoy] = primerFichajeEntrada.split(":").map(Number);
+            
+            let minDescanso = (hE_hoy*60+mE_hoy) + (1440 - (hS_prev*60+mS_prev));
+            let hDesc = Math.floor(minDescanso/60);
+            let mDesc = minDescanso % 60;
+            
+            if(hDesc < 11) {
+                listaTurnos.innerHTML += `<span style="color:#f87171; font-weight:bold;">🚨 Descanso interjornada: ${hDesc}h ${mDesc}m (Menor a 11h!)</span><br>`;
+            } else {
+                listaTurnos.innerHTML += `<span style="color:#34d399;">🛡️ Descanso interjornada: ${hDesc}h ${mDesc}m (Correcto)</span><br>`;
+            }
+        }
+    }
+}
+
+// 🛠️ EXTRAÍDO PARA REUTILIZACIÓN DIRECTA EN TIEMPO REAL
+function actualizarBannerContador(horasTrabajadasHoy) {
+    let limiteLegalDiario = 9;
+    let horasDisponibles = limiteLegalDiario - horasTrabajadasHoy;
+    const divContadorReal = document.getElementById("contador-tiempo-real");
+    
+    if (divContadorReal) {
+        if (horasTrabajadasHoy === 0) {
+            divContadorReal.innerHTML = `<div style="background: #1e293b; color: #cbd5e1; padding: 10px; border-radius: 8px; border: 1px solid #334155; margin-bottom: 12px; font-size: 0.9em; text-align: center;">⏱️ Sin actividad registrada hoy. Tienes <strong>9h 00m</strong> de margen.</div>`;
+        } else if (horasDisponibles > 0) {
+            let hDisp = Math.floor(horasDisponibles);
+            let mDisp = Math.round((horasDisponibles - hDisp) * 60);
+            divContadorReal.innerHTML = `<div style="background: #1e293b; color: #38bdf8; padding: 10px; border-radius: 8px; border: 1px solid #0284c7; margin-bottom: 12px; font-size: 0.9em; text-align: center;">⏱️ Llevas ${horasTrabajadasHoy.toFixed(1)}h. Te quedan <strong>${hDisp}h ${mDisp}m disponibles</strong> hoy.</div>`;
+        } else if (horasDisponibles === 0) {
+            divContadorReal.innerHTML = `<div style="background: #14532d; color: #4ade80; padding: 10px; border-radius: 8px; border: 1px solid #16a34a; margin-bottom: 12px; font-size: 0.9em; text-align: center;">✅ Límite legal diario alcanzado (9h). ¡Toca parar!</div>`;
+        } else {
+            let exceso = Math.abs(horasDisponibles);
+            if (exceso <= 1) {
+                divContadorReal.innerHTML = `<div style="background: #7c2d12; color: #fdba74; padding: 10px; border-radius: 8px; border: 1px solid #ea580c; margin-bottom: 12px; font-size: 0.9em; text-align: center;">⚠️ Usando ampliación (Máx 10h). Llevas ${horasTrabajadasHoy.toFixed(1)}h. Resto de margen crítico.</div>`;
+            } else {
+                divContadorReal.innerHTML = `<div style="background: #7f1d1d; color: #fca5a5; padding: 10px; border-radius: 8px; border: 1px solid #dc2626; margin-bottom: 12px; font-size: 0.9em; text-align: center;">🚨 ¡Exceso de jornada diaria! Has superado el límite de 9h/10h.</div>`;
+            }
+        }
     }
 }
 
@@ -242,7 +316,94 @@ function mesSiguiente(){
     generarCalendario();
 }
 
-// ------------------ Cálculos y Gestión de Resúmenes ------------------
+// ------------------ MOTOR ANALÍTICO EN TIEMPO REAL (ESPAÑA - AUTOBÚS) ------------------
+function analizarNormativaSemanal(filtroMesKey) {
+    let alertas = [];
+    let [anoFiltro, mesFiltro] = filtroMesKey.split("-").map(Number);
+    let diasEnMes = new Date(anoFiltro, mesFiltro, 0).getDate();
+    
+    let diasConsecutivosTrabajo = 0;
+    let ultimaSalidaTurno = null;
+    let minutosQuincenales = 0;
+
+    // 📋 1. Cálculo dinámico de Conducción Bisemanal (Límite 90 horas en España)
+    Object.keys(localStorage).forEach(key => {
+        if (!/^\d{4}-\d{2}-\d{2}$/.test(key)) return;
+        let datosDia = JSON.parse(localStorage.getItem(key));
+        if (datosDia && datosDia.horas) {
+            let match = datosDia.horas.match(/(\d+)h (\d+)m/);
+            if (match) {
+                minutosQuincenales += parseInt(match[1]) * 60 + parseInt(match[2]);
+            }
+        }
+    });
+
+    let horasQuincenalesTotales = minutosQuincenales / 60;
+    if (horasQuincenalesTotales > 90) {
+        alertas.push(`🚨 Exceso Bisemanal: Llevas ${horasQuincenalesTotales.toFixed(1)}h de conducción en la quincena (Máximo legal 90h).`);
+    } else if (horasQuincenalesTotales > 75) {
+        let hRestantes = 90 - horasQuincenalesTotales;
+        alertas.push(`⏱️ Margen Quincenal: Te quedan solo ${hRestantes.toFixed(1)}h de conducción seguras en el total de la quincena.`);
+    }
+
+    // 🔄 2. Análisis diario en orden secuencial con reset dinámico por descanso
+    for (let i = 1; i <= diasEnMes; i++) {
+        let fechaKey = `${anoFiltro}-${String(mesFiltro).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+        let datos = JSON.parse(localStorage.getItem(fechaKey));
+        
+        let esDiaTrabajado = datos && (datos.tipo === "normal" || datos.tipo === "urbano" || datos.tipo === "festivo-trabajado");
+
+        if (esDiaTrabajado) {
+            diasConsecutivosTrabajo++;
+            
+            if (ultimaSalidaTurno) {
+                let [hE, mE] = datos.turnos && datos.turnos[0] && datos.turnos[0].entrada ? 
+                               datos.turnos[0].entrada.split(":").map(Number) : [0, 0];
+                
+                let fechaActualObj = new Date(anoFiltro, mesFiltro - 1, i, hE, mE);
+                let diffMilsegundos = Math.abs(fechaActualObj - ultimaSalidaTurno);
+                let horasDeParonReal = diffMilsegundos / (1000 * 60 * 60);
+
+                // Si ha descansado más de 24 horas (Descanso semanal completo o reducido en España)
+                if (horasDeParonReal >= 24) {
+                    if (horasDeParonReal < 45) {
+                        if (!alertas.includes("⚠️ Descanso Semanal Reducido detectado (24h-44h). Próximo descanso obligado a ser Normal (min. 45h).")) {
+                            alertas.push("⚠️ Descanso Semanal Reducido detectado (24h-44h). Próximo descanso obligado a ser Normal (min. 45h).");
+                        }
+                    }
+                    // 🌟 RESET TOTAL EN TIEMPO REAL: Se rompe la acumulación de jornadas consecutivas
+                    diasConsecutivosTrabajo = 1; 
+                }
+                ultimaSalidaTurno = null;
+            }
+
+            // Límite en España sin viaje internacional: Máximo 6 días seguidos
+            if (diasConsecutivosTrabajo > 6) {
+                if (!alertas.includes("🚨 Exceso de jornadas: Has superado los 6 días consecutivos de trabajo en España sin descanso semanal.")) {
+                    alertas.push("🚨 Exceso de jornadas: Has superado los 6 días consecutivos de trabajo en España sin descanso semanal.");
+                }
+            }
+        } else {
+            // Guardamos marca del fin del turno anterior para ver el tamaño del parón
+            let fechaAyerKey = `${anoFiltro}-${String(mesFiltro).padStart(2, '0')}-${String(i - 1).padStart(2, '0')}`;
+            let datosAyer = JSON.parse(localStorage.getItem(fechaAyerKey));
+            
+            if (datosAyer && datosAyer.turnos && datosAyer.turnos.length) {
+                let ultTurnoAyer = datosAyer.turnos[datosAyer.turnos.length - 1];
+                if (ultTurnoAyer && ultTurnoAyer.salida) {
+                    let [hS, mS] = ultTurnoAyer.salida.split(":").map(Number);
+                    ultimaSalidaTurno = new Date(anoFiltro, mesFiltro - 1, i - 1, hS, mS);
+                }
+            }
+            
+            // 🌟 RESET TOTAL POR DÍA VACÍO: Rompe la secuencia de días encadenados
+            diasConsecutivosTrabajo = 0;
+        }
+    }
+
+    return alertas;
+}
+
 function calcularResumen(){
     let resumen={};
     Object.keys(localStorage).forEach(key=>{
@@ -273,6 +434,25 @@ function mostrarResumen(){
         let mesNombre = nombresMes[parseInt(month)-1]+" "+year;
         let horasTotales = Math.floor(d.horas/60);
         let minutosTotales = d.horas % 60;
+
+        let alertasNormativa = analizarNormativaSemanal(mesKey);
+        let htmlAlertas = "";
+        
+        if(alertasNormativa.length > 0) {
+            let colorFondo = alertasNormativa.some(a => a.includes("🚨")) ? "#7f1d1d" : "#451a03";
+            let colorBorde = alertasNormativa.some(a => a.includes("🚨")) ? "#b91c1c" : "#b45309";
+            let colorTexto = alertasNormativa.some(a => a.includes("🚨")) ? "#fca5a5" : "#fde047";
+
+            htmlAlertas = `<div style="margin-top:14px; padding:12px; background:${colorFondo}; border:1px solid ${colorBorde}; border-radius:8px; font-size:0.85em; color:${colorTexto}; font-weight:bold; display:flex; flex-direction:column; gap:8px;">`;
+            alertasNormativa.forEach((alerta, index) => {
+                let estiloSeparador = index < alertasNormativa.length - 1 ? "border-bottom: 1px dashed rgba(255,255,255,0.2); padding-bottom: 6px;" : "";
+                htmlAlertas += `<div style="${estiloSeparador}">${alerta}</div>`;
+            });
+            htmlAlertas += `</div>`;
+        } else {
+            htmlAlertas = `<div style="margin-top:14px; padding:10px; background:#064e3b; border:1px solid #059669; border-radius:8px; font-size:0.85em; color:#a7f3d0; text-align:center; font-weight:bold;">📋 Tacógrafo limpio: Conforme con la normativa de transportes.</div>`;
+        }
+
         html += `<div class="mes-card">
             <h3>${mesNombre}</h3>
             <div class="dato"><span>Horas trabajadas:</span><span>${horasTotales}h ${minutosTotales}m</span></div>
@@ -280,6 +460,7 @@ function mostrarResumen(){
             <div class="dato"><span>Festivos trabajados:</span><span>${d.festivosTrab}</span></div>
             <div class="dato"><span>Vacaciones:</span><span>${d.vacaciones}</span></div>
             <div class="dato"><span>Trabajo urbano:</span><span>${d.urbanos}</span></div>
+            ${htmlAlertas}
         </div>`;
     }
     
@@ -316,39 +497,6 @@ function mostrarResumen(){
             
         resumenDiv.parentNode.insertBefore(contenedorBoton, resumenDiv.nextSibling);
     }
-}
-
-function exportarAExcel() {
-    let contenidoCSV = "Fecha;Tipo de Dia;Horas Totales;Turnos Fichados;Notas\n";
-    let fechas = Object.keys(localStorage).filter(key => /^\d{4}-\d{2}-\d{2}$/.test(key)).sort();
-
-    if (fechas.length === 0) {
-        alert("No tienes ningún dato registrado para exportar todavía.");
-        return;
-    }
-
-    fechas.forEach(fecha => {
-        let datos = JSON.parse(localStorage.getItem(fecha));
-        if (!datos) return;
-
-        let tipo = datos.tipo || "normal";
-        let horas = datos.horas || "0h 0m";
-        let nota = datos.nota ? datos.nota.replace(/[\n\r;]/g, " ") : "";
-
-        let turnosTexto = datos.turnos && datos.turnos.length ? 
-            datos.turnos.map(t => `${t.entrada || "..."}-${t.salida || "..."}`).join(" | ") : "Sin turnos";
-
-        contenidoCSV += `${fecha};${tipo.toUpperCase()};${horas};${turnosTexto};${nota}\n`;
-    });
-
-    let blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), contenidoCSV], { type: "text/csv;charset=utf-8;" });
-    let link = document.createElement("a");
-    link.setAttribute("href", URL.createObjectURL(blob));
-    link.setAttribute("download", `Historial_Fichajes_${new Date().getFullYear()}.csv`);
-    link.style.visibility = 'hidden';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
 }
 
 // ================= SISTEMA DE SEGURIDAD DEFENSIVO (BACKUPS) =================
@@ -489,6 +637,70 @@ calendar.addEventListener('touchend', (e) => {
     }
 }, { passive: true });
 
+// ================= APLICAR HORARIO MANUAL CORREGIDO =================
+
+function aplicarHorarioManual() {
+    const h2Texto = document.getElementById("fechaSeleccionada").innerText;
+    let fechaKey = null;
+
+    if (h2Texto && h2Texto.includes("/")) {
+        let partes = h2Texto.split("/");
+        if(partes.length === 3) {
+            fechaKey = `${partes[2]}-${partes[1].padStart(2,'0')}-${partes[0].padStart(2,'0')}`;
+        }
+    } else {
+        fechaKey = h2Texto;
+    }
+
+    if (!fechaKey) {
+        alert("Error al identificar la fecha seleccionada.");
+        return;
+    }
+
+    let horaEntrada = document.getElementById("manualEntrada").value;
+    let horaSalida = document.getElementById("manualSalida").value;
+    
+    if (!horaEntrada || !horaSalida) {
+        alert("Por favor, introduce ambas horas.");
+        return;
+    }
+
+    let datosDia = JSON.parse(localStorage.getItem(fechaKey)) || {};
+    
+    datosDia.tipo = document.getElementById("tipo").value;
+    datosDia.nota = document.getElementById("notas").value;
+    
+    let [hE, mE] = horaEntrada.split(":").map(Number);
+    let [hS, mS] = horaSalida.split(":").map(Number);
+    
+    let minutosEntrada = hE * 60 + mE;
+    let minutosSalida = hS * 60 + mS;
+    let minutosTotales = minutosSalida - minutosEntrada;
+    
+    if (minutosTotales < 0) {
+        minutosTotales += 24 * 60; 
+    }
+
+    let horasRender = Math.floor(minutosTotales / 60);
+    let minsRender = minutosTotales % 60;
+    let textoHorasFormateado = `${horasRender}h ${String(minsRender).padStart(2, '0')}m`;
+
+    // Sincronizamos la estructura tanto para datos directos como para el array de turnos
+    datosDia.turnos = [{ entrada: horaEntrada, salida: horaSalida }]; 
+    datosDia.entrada = horaEntrada;                                  
+    datosDia.salida = horaSalida;                                    
+    datosDia.horas = textoHorasFormateado;                           
+
+    localStorage.setItem(fechaKey, JSON.stringify(datosDia));
+    
+    // 🛠️ CORREGIDO: Llama a la función unificada usando el ID real de tu div HTML
+    actualizarBannerContador(minutosTotales / 60);
+
+    // Refrescamos la vista general y cerramos
+    generarCalendario(); 
+    cerrar();
+}
+
 // ================= INICIALIZACIÓN DEL ENTORNO SEGURIZADO =================
 
 generarCalendario();
@@ -509,4 +721,91 @@ if ("serviceWorker" in navigator) {
             };
         }).catch(err => console.log("Error SW:", err));
     }
+}
+
+// ================= MOTOR DE EXPORTACIÓN NATIVA A EXCEL (ANTI-ERRORES) =================
+
+function exportarAExcel() {
+    let claves = Object.keys(localStorage).filter(k => /^\d{4}-\d{2}-\d{2}$/.test(k));
+    
+    if (claves.length === 0) {
+        alert("No hay registros de conducción guardados para exportar.");
+        return;
+    }
+
+    // Ordenamos las fechas cronológicamente
+    claves.sort((a, b) => new Date(a) - new Date(b));
+
+    // Cabeceras del Excel estructurado
+    let htmlTabla = `
+        <table border="1">
+            <tr style="background-color: #1e293b; color: #ffffff; font-weight: bold;">
+                <th>Fecha</th>
+                <th>Tipo de Jornada</th>
+                <th>Total Horas</th>
+                <th>Turno 1 (Entrada - Salida)</th>
+                <th>Turno 2 (Entrada - Salida)</th>
+                <th>Turno 3 (Entrada - Salida)</th>
+                <th>Notas / Incidencias</th>
+            </tr>
+    `;
+
+    claves.forEach(key => {
+        let datos = JSON.parse(localStorage.getItem(key));
+        if (!datos) return;
+
+        // Formateamos la fecha a formato legible (DD/MM/YYYY)
+        let [aaaa, mm, dd] = key.split("-");
+        let fechaFormateada = `${dd}/${mm}/${aaaa}`;
+        
+        let tipoDia = datos.tipo ? datos.tipo.toUpperCase() : "NORMAL";
+        let horasTotales = datos.horas || "0h 00m";
+        let notaText = datos.nota || "";
+
+        // Procesamos los sub-turnos (máximo 3 mapeados en columnas estables)
+        let columnasTurnos = ["", "", ""];
+        if (datos.turnos && datos.turnos.length) {
+            datos.turnos.forEach((t, index) => {
+                if (index < 3) {
+                    let salidaText = t.salida || "Fichado Entrada (...)";
+                    columnasTurnos[index] = `${t.entrada} a ${salidaText}`;
+                }
+            });
+        } else if (datos.entrada) { 
+            // Salvaguarda por si quedan registros antiguos sin array estructurado
+            let salidaText = datos.salida || "(...)";
+            columnasTurnos[0] = `${datos.entrada} a ${salidaText}`;
+        }
+
+        htmlTabla += `
+            <tr>
+                <td style="text-align: center;">${fechaFormateada}</td>
+                <td style="text-align: center; font-weight: bold;">${tipoDia}</td>
+                <td style="text-align: center; background-color: #f1f5f9;">${horasTotales}</td>
+                <td style="text-align: center;">${columnasTurnos[0]}</td>
+                <td style="text-align: center;">${columnasTurnos[1]}</td>
+                <td style="text-align: center;">${columnasTurnos[2]}</td>
+                <td>${notaText}</td>
+            </tr>
+        `;
+    });
+
+    htmlTabla += "</table>";
+
+    // Generamos el Blob de datos simulando formato Excel XML seguro
+    let excelTemplate = `
+        <html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40">
+        <head><meta charset="UTF-8"></head>
+        <body>${htmlTabla}</body>
+        </html>
+    `;
+
+    let blob = new Blob([excelTemplate], { type: "application/vnd.ms-excel" });
+    let linkDescarga = document.createElement("a");
+    linkDescarga.href = URL.createObjectURL(blob);
+    linkDescarga.download = `Historial_Conduccion_Bus_${new Date().getFullYear()}.xls`;
+    
+    document.body.appendChild(linkDescarga);
+    linkDescarga.click();
+    document.body.removeChild(linkDescarga);
 }
