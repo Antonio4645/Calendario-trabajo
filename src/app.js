@@ -81,12 +81,25 @@ function abrirFormulario(fecha) {
   const [y, m, d] = fecha.split("-");
   UI.fechaSeleccionada.innerText = `${d}/${m}/${y}`;
   const datos = cacheDatos[fecha] || {};
+  
   UI.tipo.value = datos.tipo || "viajes";
   UI.notas.value = datos.nota || "";
   UI.manualEntrada.value = datos.entrada || "06:00";
   UI.manualSalida.value = datos.salida || "19:30";
-  UI.manualConduccion.value = decimalAHora(datos.horasConduccion) ?? "";
-  UI.manualOtrosTrabajos.value = decimalAHora(datos.horasOtrosTrabajos) ?? "";
+
+  // --- ARREGLO DE LOS NUEVOS INPUTS ---
+  // Convertimos el decimal (ej: 4.5) a horas y minutos (ej: 04 y 30)
+  const setHorasMinutos = (idH, idM, valorDecimal) => {
+    let horas = Math.floor(valorDecimal || 0);
+    let minutos = Math.round(((valorDecimal || 0) % 1) * 60);
+    document.getElementById(idH).value = horas.toString().padStart(2, '0');
+    document.getElementById(idM).value = minutos.toString().padStart(2, '0');
+  };
+
+  setHorasMinutos('condH', 'condM', datos.horasConduccion);
+  setHorasMinutos('otrosH', 'otrosM', datos.horasOtrosTrabajos);
+  // ------------------------------------
+
   UI.contenedorTurnosExtra.innerHTML = "";
   (datos.turnosExtra || []).forEach((t) => agregarFilaExtra(t.ent, t.sal));
   actualizarPanelTurnosSuperior(datos);
@@ -95,12 +108,25 @@ function abrirFormulario(fecha) {
 
 function agregarFilaExtra(ent = "", sal = "") {
   if (!UI.contenedorTurnosExtra) return;
+
   const div = document.createElement("div");
   div.className = "turno-extra";
-  div.innerHTML = `<input type="time" class="extra-ent" value="${ent}"> a <input type="time" class="extra-sal" value="${sal}"> <button onclick="this.parentElement.remove()">x</button>`;
+  div.style.cssText = "display: flex; align-items: center; gap: 8px; background: #1e293b; padding: 12px; border-radius: 8px; margin-bottom: 10px;";
+
+  div.innerHTML = `
+    <input type="time" class="extra-ent" value="${ent}" 
+           style="flex: 1; padding: 10px; border-radius: 6px; border: none; background: #0f172a; color: white; font-size: 16px;">
+    <span>a</span>
+    <input type="time" class="extra-sal" value="${sal}" 
+           style="flex: 1; padding: 10px; border-radius: 6px; border: none; background: #0f172a; color: white; font-size: 16px;">
+    <button onclick="this.parentElement.remove()" 
+            style="padding: 10px 15px; background: #ef4444; color: white; border: none; border-radius: 6px; font-weight: bold;">
+      X
+    </button>
+  `;
+
   UI.contenedorTurnosExtra.appendChild(div);
 }
-
 function generarCalendario() {
   UI.calendar.innerHTML = "";
   UI.mesActual.innerText = `${nombresMes[mes]} ${año}`;
@@ -375,13 +401,10 @@ function convertirStringADecimal(str) {
 function aplicarHorarioManual() {
   if (!fechaSeleccionadaGlobal) return;
 
-  // 1. Obtener tipo actual: si el UI está vacío, recuperamos lo que ya hubiera
-  let tipoSeleccionado = UI.tipo.value;
-  if (!tipoSeleccionado || tipoSeleccionado === "") {
-      tipoSeleccionado = cacheDatos[fechaSeleccionadaGlobal]?.tipo || "viajes";
-  }
+  // 1. Obtener tipo actual
+  let tipoSeleccionado = UI.tipo.value || cacheDatos[fechaSeleccionadaGlobal]?.tipo || "viajes";
 
-  // 1. Obtener valores de la interfaz
+  // 2. Obtener valores de entrada y salida
   let hEntrada = UI.manualEntrada.value;
   let hSalida = UI.manualSalida.value;
 
@@ -393,50 +416,49 @@ function aplicarHorarioManual() {
   let amplitudTotal = calcularHorasEntreFichajes(hEntrada, hSalida);
   let extras = [];
 
-  // 2. Procesar turnos extra si existen
+ // 2. Procesar turnos extra
   const filasExtra = document.querySelectorAll(".turno-extra");
   filasExtra.forEach((fila) => {
-    let ent = fila.querySelector(".extra-ent").value;
-    let sal = fila.querySelector(".extra-sal").value;
-    if (ent && sal) {
-      amplitudTotal += calcularHorasEntreFichajes(ent, sal);
-      extras.push({ ent, sal });
+    // Estas clases DEBEN coincidir con las que pusiste en el innerHTML de agregarFilaExtra
+    let inputEntrada = fila.querySelector(".extra-ent");
+    let inputSalida = fila.querySelector(".extra-sal");
+    
+    // Verificamos que los inputs existan antes de leer el .value
+    if (inputEntrada && inputSalida) {
+        let ent = inputEntrada.value;
+        let sal = inputSalida.value;
+        
+        if (ent && sal) {
+          amplitudTotal += calcularHorasEntreFichajes(ent, sal);
+          extras.push({ ent, sal });
+        }
     }
   });
 
-  let hCond = convertirStringADecimal(UI.manualConduccion.value) || 0;
-  let hOtros = convertirStringADecimal(UI.manualOtrosTrabajos.value) || 0;
+  // 4. Obtener Conducción y Otros (usando los nuevos campos divididos)
+  let hCond = (parseInt(document.getElementById('condH').value) || 0) + 
+              ((parseInt(document.getElementById('condM').value) || 0) / 60);
+              
+  let hOtros = (parseInt(document.getElementById('otrosH').value) || 0) + 
+               ((parseInt(document.getElementById('otrosM').value) || 0) / 60);
+               
   let sumaIntroducida = hCond + hOtros;
-
   let diferencia = amplitudTotal - sumaIntroducida;
 
-  // 3. Validación estricta
+  // 5. Validación
   if (Math.abs(diferencia) > 0.05) {
-    // Un margen de 3 minutos (0.05h) es más razonable
     let totalMinutos = Math.round(Math.abs(diferencia) * 60);
     let horas = Math.floor(totalMinutos / 60);
     let minutos = totalMinutos % 60;
     let tiempoFormateado = horas > 0 ? `${horas}h ${minutos}m` : `${minutos}m`;
 
-    if (diferencia > 0) {
-      alert(
-        `⚠️ Faltan horas por asignar:\n\n` +
-          `Amplitud total de jornada: ${amplitudTotal.toFixed(2)}h\n` +
-          `Suma introducida: ${sumaIntroducida.toFixed(2)}h\n\n` +
-          `Para cuadrar la jornada, te falta por asignar: ${tiempoFormateado}.`,
-      );
-    } else {
-      alert(
-        `⚠️ Te has pasado asignando horas:\n\n` +
-          `Amplitud total de jornada: ${amplitudTotal.toFixed(2)}h\n` +
-          `Suma introducida: ${sumaIntroducida.toFixed(2)}h\n\n` +
-          `Te sobran exactamente: ${tiempoFormateado}.`,
-      );
-    }
-    return; // Detener el guardado si hay discrepancia
+    alert(diferencia > 0 
+      ? `⚠️ Faltan ${tiempoFormateado} por asignar.` 
+      : `⚠️ Te sobran ${tiempoFormateado} asignados.`);
+    return;
   }
 
-  // 4. Guardar
+  // 6. Guardar en caché
   cacheDatos[fechaSeleccionadaGlobal] = {
     tipo: tipoSeleccionado,
     nota: UI.notas.value,
@@ -450,10 +472,10 @@ function aplicarHorarioManual() {
 
   localStorage.setItem("calendario_datos", JSON.stringify(cacheDatos));
 
-  // 5. Cerrar y actualizar
+  // 7. Cierre y actualización
   if (typeof cerrar === "function") cerrar();
   generarCalendario();
-  mostrarResumen(); // Actualizamos el resumen tras guardar
+  mostrarResumen();
   console.log("Horario guardado correctamente");
 }
 
@@ -496,15 +518,29 @@ function cerrar() {
 function actualizarPanelTurnosSuperior(datos) {
   if (listaTurnos) {
     if (datos.entrada && datos.salida) {
-      let hCond = datos.horasConduccion || 0;
-      let hOtros = datos.horasOtrosTrabajos || 0;
+      // 1. Usamos tu función para que los números salgan limpios (2:20h en vez de 2.3333h)
+      let hCond = decimalAHora(datos.horasConduccion || 0);
+      let hOtros = decimalAHora(datos.horasOtrosTrabajos || 0);
+      
       let extrasHtml = "";
       if (datos.turnosExtra && datos.turnosExtra.length > 0) {
-        extrasHtml =
-          "<br>➕ Turnos partidos: " +
-          datos.turnosExtra.map((t) => `${t.ent}-${t.sal}`).join(", ");
+        // 2. Creamos bloques visuales para los turnos extra en lugar de una lista con comas
+        let itemsExtras = datos.turnosExtra.map((t) => 
+          `<span style="background: #334155; padding: 2px 6px; border-radius: 4px; font-size: 0.85em; margin-right: 5px;">${t.ent} a ${t.sal}</span>`
+        ).join('');
+        
+        extrasHtml = `<div style="margin-top: 8px;">➕ <b>Turnos partidos:</b><br>${itemsExtras}</div>`;
       }
-      listaTurnos.innerHTML = `⏱️ Jornada: de <b>${datos.entrada}</b> a <b>${datos.salida}</b>${extrasHtml}<br>💾 Conducción: <b>${hCond}h</b> | Otros: <b>${hOtros}h</b>`;
+
+      // 3. Montamos el HTML final con estilo limpio
+      listaTurnos.innerHTML = `
+        <div style="line-height: 1.6;">
+          ⏱️ Jornada: de <b>${datos.entrada}</b> a <b>${datos.salida}</b>
+          ${extrasHtml}
+          <div style="margin-top: 8px;">
+            💾 Conducción: <b>${hCond}</b> | Otros: <b>${hOtros}</b>
+          </div>
+        </div>`;
     } else {
       listaTurnos.innerHTML = `🔮 Sin actividad registrada hoy. Tienes margen seguro para fichar.`;
     }

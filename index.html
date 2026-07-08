@@ -89,16 +89,26 @@
                     <div style="flex: 1; text-align: center;">
                         <label
                             style="font-size: 0.7em; color: #38bdf8; display: block; margin-bottom: 4px; font-weight: bold;">🧵
-                            Conducción (Horas):</label>
-                        <input type="text" id="manualConduccion" step="0.1" min="0" max="24" placeholder="Ej: 4.5"
-                            style="width: 100%; background: #1e293b; color: #38bdf8; border: 1px solid #0284c7; padding: 8px; border-radius: 6px; font-size: 0.9em; text-align: center; box-sizing: border-box; font-weight: bold;">
+                            Conducción:</label>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                            <input type="text" id="condH" maxlength="2" placeholder="00"
+                                style="width: 40px; background: #1e293b; color: #38bdf8; border: 1px solid #0284c7; padding: 8px; border-radius: 6px; text-align: center; font-weight: bold;">
+                            <span style="color: #38bdf8; font-weight: bold;">:</span>
+                            <input type="text" id="condM" maxlength="2" placeholder="00"
+                                style="width: 40px; background: #1e293b; color: #38bdf8; border: 1px solid #0284c7; padding: 8px; border-radius: 6px; text-align: center; font-weight: bold;">
+                        </div>
                     </div>
                     <div style="flex: 1; text-align: center;">
                         <label
                             style="font-size: 0.7em; color: #f97316; display: block; margin-bottom: 4px; font-weight: bold;">⚒️
-                            Otros/Disponibilidad:</label>
-                        <input type="text" id="manualOtrosTrabajos" step="0.1" min="0" max="24" placeholder="Ej: 3.5"
-                            style="width: 100%; background: #1e293b; color: #f97316; border: 1px solid #ea580c; padding: 8px; border-radius: 6px; font-size: 0.9em; text-align: center; box-sizing: border-box; font-weight: bold;">
+                            Otros/Disp.:</label>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 4px;">
+                            <input type="text" id="otrosH" maxlength="2" placeholder="00"
+                                style="width: 40px; background: #1e293b; color: #f97316; border: 1px solid #ea580c; padding: 8px; border-radius: 6px; text-align: center; font-weight: bold;">
+                            <span style="color: #f97316; font-weight: bold;">:</span>
+                            <input type="text" id="otrosM" maxlength="2" placeholder="00"
+                                style="width: 40px; background: #1e293b; color: #f97316; border: 1px solid #ea580c; padding: 8px; border-radius: 6px; text-align: center; font-weight: bold;">
+                        </div>
                     </div>
                 </div>
 
@@ -126,14 +136,15 @@
     </div>
 
     <div id="resumen">
-    <div id="resumen-contenido"></div>
+        <div id="resumen-contenido"></div>
 
-    <div class="resumen-acciones">
-        <button onclick="window.exportarBackup()" class="btn-guardar">📥 Exportar Backup</button>
-        <button onclick="document.getElementById('importarFile').click()" class="btn-importar">📤 Importar Backup</button>
-        <input type="file" id="importarFile" onchange="window.importarBackup(event)" accept=".json">
+        <div class="resumen-acciones">
+            <button onclick="window.exportarBackup()" class="btn-guardar">📥 Exportar Backup</button>
+            <button onclick="document.getElementById('importarFile').click()" class="btn-importar">📤 Importar
+                Backup</button>
+            <input type="file" id="importarFile" onchange="window.importarBackup(event)" accept=".json">
+        </div>
     </div>
-</div>
 
     <script type="module" src="src/app.js"></script>
 </body>
