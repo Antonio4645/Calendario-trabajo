@@ -317,6 +317,13 @@ function mostrarResumen() {
   if (bloqueBotones) {
       UI.resumen.appendChild(bloqueBotones);
   }
+  // 3. AHORA añadimos nuestro botón de exportar de forma limpia
+  const btnExportar = document.createElement("button");
+  btnExportar.innerText = "📊 Descargar Histórico en Excel";
+  btnExportar.style.cssText = "width: 100%; margin-top: 15px; padding: 12px; background: #8b5cf6; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;";
+  btnExportar.onclick = exportarTodoAExcel;
+  
+  UI.resumen.appendChild(btnExportar);
 }
 
 // ------------------ Sistema de Fichajes Dinámicos en Tiempo Real ------------------
@@ -589,5 +596,39 @@ function importarBackup(event) {
         }
     };
     reader.readAsText(file);
+}
+
+function exportarTodoAExcel() {
+  const todasLasFechas = Object.keys(cacheDatos);
+  if (todasLasFechas.length === 0) return;
+
+  // Función interna para convertir decimal a formato HH:MM
+  const decimalAHoraFormato = (decimal) => {
+    let horas = Math.floor(decimal || 0);
+    let minutos = Math.round(((decimal || 0) % 1) * 60);
+    return `${horas.toString().padStart(2, '0')}:${minutos.toString().padStart(2, '0')}`;
+  };
+
+  let csvContent = "\uFEFF"; 
+  csvContent += "Fecha,Tipo,Entrada,Salida,Conducción,Otros,Amplitud,Notas\n";
+  
+  todasLasFechas.sort().forEach(fecha => {
+    const d = cacheDatos[fecha];
+    const notaLimpia = (d.nota || "").replace(/,/g, " ").replace(/\n/g, " ");
+    
+    // Usamos nuestra nueva función de formato
+    const cond = decimalAHoraFormato(d.horasConduccion);
+    const otros = decimalAHoraFormato(d.horasOtrosTrabajos);
+    const amp = decimalAHoraFormato(d.amplitud);
+    
+    csvContent += `${fecha},${d.tipo || ""},${d.entrada || ""},${d.salida || ""},${cond},${otros},${amp},${notaLimpia}\n`;
+  });
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.setAttribute("href", url);
+  link.setAttribute("download", "Resumen_Historico.csv");
+  link.click();
 }
 // ... (Pega aquí el resto de tus funciones como aplicarHorarioManual, ficharEntrada, etc.)
