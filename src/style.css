@@ -1,0 +1,514 @@
+/* ==========================================================================
+   ESTILOS PREMIUM GRAPHITE - FIJACIÓN ABSOLUTA PARA MÓVIL (ANTI-DESBORDE)
+   ========================================================================== */
+
+* {
+    box-sizing: border-box !important;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: #0f172a;
+    color: #f8fafc;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    overflow-x: hidden;
+    /* Bloqueo garantizado de barra horizontal */
+}
+
+/* 🏢 Cabecera (Logo y Título) */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+    width: 100%;
+    max-width: 400px;
+}
+/* ==========================================================================
+   RESUMEN DE ACCIONES (EXPORTAR / IMPORTAR BACKUP)
+   ========================================================================== */
+.resumen-acciones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    border-radius: 8px;
+    gap: 10px;
+    margin-top: 20px;
+    width: 100%;
+    max-width: 400px;
+}
+
+#importarFile {
+    display: none;
+}
+
+.header img {
+    height: 32px !important;
+    width: auto !important;
+    object-fit: contain !important;
+    flex-shrink: 0;
+}
+
+.header h1 {
+    font-size: 1.2em;
+    font-weight: 600;
+    color: #f8fafc;
+}
+
+/* 🗺️ Barra de Navegación de Meses */
+.nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 400px;
+    margin-bottom: 15px;
+    padding: 0 4px;
+}
+
+.nav button {
+    background: #1e293b;
+    border: 1px solid #334155;
+    color: #f8fafc;
+    padding: 8px 14px;
+    font-size: 0.9em;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    transition: background 0.2s;
+}
+
+.nav button:active {
+    background: #334155;
+}
+
+#mesActual {
+    font-size: 1.15em;
+    font-weight: 600;
+    text-align: center;
+}
+
+/* 📅 Letras de los días de la semana (L M X J V S D) */
+.semana {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 4px;
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    font-weight: bold;
+    color: #94a3b8;
+    font-size: 0.85em;
+    margin-bottom: 6px;
+    padding: 0 8px;
+}
+
+/* 📅 Cuadrícula elástica del Calendario */
+#calendar {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 5px;
+    width: 100%;
+    max-width: 400px;
+    background: #1e293b;
+    padding: 8px;
+    border-radius: 14px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+    border: 1px solid #334155;
+}
+
+/* Celdas de los Días individuales */
+.day {
+    width: 100% !important;
+    min-width: 0 !important;
+    /* Evita que el navegador estire las celdas a la fuerza */
+    aspect-ratio: 1 / 1.15;
+    /* Proporción adaptada para que quepa el texto abajo */
+    background-color: #0f172a;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    /* Número arriba, Turno abajo */
+    align-items: center;
+    text-align: center;
+    cursor: pointer;
+    position: relative;
+    border: 1px solid #1e293b;
+    padding: 5px 2px;
+    box-sizing: border-box;
+}
+
+.day:active {
+    transform: scale(0.95);
+}
+
+/* 🌟 JERARQUÍA VÍSUAL ESTRUCTURADA PARA LAS CELDAS */
+
+/* Estilo para el número del dia (Prioridad Alta) */
+.num-dia {
+    font-size: 0.95em !important;
+    font-weight: 700 !important;
+    color: #ffffff !important;
+    opacity: 0.95;
+    margin-bottom: auto;
+    /* Empuja el contenedor del turno hacia la base */
+}
+
+/* Sábados y Domingos con el número atenuado (si no tienen un turno asignado) */
+.day.fin-de-semana .num-dia {
+    color: #64748b !important;
+}
+
+/* Estilo base elástico para la información del turno (Prioridad Secundaria) */
+.info-turno {
+    display: block;
+    width: 100%;
+    font-size: 0.55em !important;
+    /* Compacto, nítido y sin desbordes */
+    line-height: 1.2;
+    font-weight: bold;
+    text-align: center;
+    margin-top: auto;
+    /* Fijación absoluta abajo */
+    color: #94a3b8;
+    /* Tono neutro por defecto */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    /* Si pones muchas horas añade '...' automáticamente */
+}
+
+/* Icono lápiz de notas */
+.indicador-nota {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    font-size: 0.7em;
+}
+
+/* 🌟 RESALTAR DÍA ACTUAL CON EFECTO NEÓN (GLOW) */
+.hoy-actual {
+    border: 2px solid #38bdf8 !important;
+    box-shadow: 0 0 12px rgba(56, 189, 248, 0.6), inset 0 0 6px rgba(56, 189, 248, 0.2) !important;
+    animation: pulsoNeon 2.5s infinite alternate ease-in-out;
+}
+
+@keyframes pulsoNeon {
+    0% {
+        box-shadow: 0 0 6px rgba(56, 189, 248, 0.4);
+    }
+
+    100% {
+        box-shadow: 0 0 16px rgba(56, 189, 248, 0.8), inset 0 0 4px rgba(56, 189, 248, 0.3);
+    }
+}
+
+/* ==========================================================================
+   COLORES DE LOS TURNOS (Con jerarquía visual cromática)
+   ========================================================================== */
+.day.viajes {
+    background-color: #095fff !important;
+    border: none;
+}
+
+.day.viajes .info-turno {
+    color: #edeeee !important;
+}
+
+.day.vacaciones {
+    background-color: #065f46 !important;
+    border: none;
+}
+
+.day.vacaciones .info-turno {
+    color: #ffffff !important;
+}
+
+.day.festivo {
+    background-color: #4c0092 !important;
+    border: none;
+}
+
+.day.festivo .info-turno {
+    color: #f7f6f6 !important;
+}
+
+.day.festivo-trabajado {
+    background-color: #a21caf !important;
+    border: none;
+}
+
+.day.festivo-trabajado .info-turno {
+    color: #fdfdfd !important;
+}
+
+.day.normal {
+    background-color: #ec0202 !important;
+    border: none;
+}
+
+.day.normal .info-turno {
+    color: #f5f5ff !important;
+}
+
+.day.urbano {
+    background-color: #000000 !important;
+    border: none;
+}
+
+.day.urbano .info-turno {
+    color: #f8fafc !important;
+}
+
+/* Forzar que el número siempre conserve brillo blanco/amarillo en días con turnos */
+.day.viajes .num-dia,
+.day.vacaciones .num-dia,
+.day.festivo .num-dia,
+.day.festivo-trabajado .num-dia,
+.day.urbano .num-dia,
+.day.normal .num-dia {
+    color: #e9fa01 !important;
+    opacity: 1;
+}
+
+/* ==========================================================================
+   FORMULARIO FLOTANTE (EFECTO ANIMADO BOTTOM SHEET)
+   ========================================================================== */
+#formulario {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    /* Empuja el formulario al borde inferior */
+    align-items: center;
+    z-index: 1000;
+    transition: opacity 0.3s ease;
+}
+
+/* El contenedor interno que aloja tus inputs y botones */
+.contenido-modal {
+    width: 100%;
+    max-width: 400px !important;
+    background: #1e293b;
+    border-radius: 20px 20px 0 0;
+    /* Esquinas redondeadas solo arriba */
+    padding: 20px 16px 35px 16px;
+    box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.5);
+    border-top: 1px solid #334155;
+    box-sizing: border-box;
+    transform: translateY(0);
+    max-height: 85vh;
+    /* Evita desbordes táctiles si el teclado virtual se despliega */
+    overflow-y: auto;
+    /* Scroll interno de seguridad */
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Manejo del estado oculto sin romper las transiciones */
+#formulario.hidden {
+    display: flex !important;
+    opacity: 0;
+    pointer-events: none;
+}
+
+#formulario.hidden .contenido-modal {
+    transform: translateY(100%);
+}
+
+/* Forzar que los elementos del formulario guarden las proporciones de la app */
+#formulario h2,
+#formulario h3,
+#formulario label,
+#formulario select,
+#formulario textarea,
+#formulario input,
+#formulario .grid-botones {
+    width: 100%;
+    max-width: 360px !important;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#formulario h2 {
+    font-size: 1.25em;
+    color: #38bdf8;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+#formulario h3 {
+    font-size: 0.95em;
+    color: #94a3b8;
+    margin-top: 6px;
+    margin-bottom: 4px;
+}
+
+#formulario label {
+    font-size: 0.85em;
+    color: #94a3b8;
+    margin-top: 6px;
+    margin-bottom: 2px;
+    display: block;
+}
+
+/* ESTILOS DE INPUTS ADAPTADOS PARA MÓVIL (DEDOS GRANDES) */
+#formulario select,
+#formulario textarea,
+#formulario input {
+    background: #0f172a;
+    border: 1px solid #475569;
+    color: #f8fafc;
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 1em;
+    /* Previene el zoom automático molesto en pantallas iOS */
+    margin-bottom: 6px;
+    box-sizing: border-box;
+    width: 100%;
+}
+
+/* Adaptación estética del reloj nativo de Android/iOS al modo oscuro */
+#formulario input[type="time"],
+#formulario input[type="number"] {
+    color-scheme: dark;
+}
+
+#formulario textarea {
+    resize: none;
+    height: 50px;
+}
+
+/* 🛠️ CORRECCIÓN: Estilos independientes y visibles para el panel de turnos superior */
+#listaTurnos {
+    display: block !important;
+    width: 100%;
+    max-width: 360px;
+    background: #0f172a;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 0.85em;
+    border: 1px solid #334155;
+    color: #cbd5e1;
+    line-height: 1.4;
+    margin: 8px auto;
+    /* Centrado horizontal */
+    box-sizing: border-box;
+    text-align: center;
+}
+
+/* REJILLA DE BOTONES DEFENSIVA */
+.grid-botones {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    box-sizing: border-box;
+    margin-top: 10px;
+}
+
+.grid-botones button {
+    padding: 12px 6px;
+    font-size: 0.85em;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.15);
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    white-space: normal !important;
+    text-align: center;
+}
+
+.grid-botones button:active {
+    filter: brightness(0.85);
+}
+
+/* Clases específicas para tus botones */
+.btn-entrada {
+    background: #2563eb !important;
+}
+
+.btn-salida {
+    background: #dc2626 !important;
+}
+
+.btn-eliminar {
+    background: #b91c1c !important;
+}
+
+.btn-cancelar {
+    background: #475569 !important;
+}
+
+.btn-guardar {
+    background: #0d9488 !important;
+    grid-column: span 2;
+    padding: 14px 6px !important;
+    font-size: 0.95em;
+}
+
+/* ==========================================================================
+   RESÚMENES MENSUALES Y COPIAS
+   ========================================================================== */
+#resumen {
+    width: 100%;
+    max-width: 400px;
+    margin-top: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 30px;
+    margin-bottom: 60px;
+}
+
+.mes-card {
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 14px;
+    border: 1px solid #334155;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.mes-card h3 {
+    font-size: 1em;
+    color: #38bdf8;
+    margin-bottom: 8px;
+    border-bottom: 1px solid #334155;
+    padding-bottom: 4px;
+}
+
+.dato {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.9em;
+    margin: 5px 0;
+    color: #cbd5e1;
+}
+
+.dato span:last-child {
+    font-weight: bold;
+    color: #f8fafc;
+}
+
+.hidden {
+    display: none !important;
+}
