@@ -85,8 +85,8 @@ function abrirFormulario(fecha) {
   UI.notas.value = datos.nota || "";
   UI.manualEntrada.value = datos.entrada || "06:00";
   UI.manualSalida.value = datos.salida || "19:30";
-  UI.manualConduccion.value = datos.horasConduccion ?? "";
-  UI.manualOtrosTrabajos.value = datos.horasOtrosTrabajos ?? "";
+  UI.manualConduccion.value = decimalAHora(datos.horasConduccion) ?? "";
+  UI.manualOtrosTrabajos.value = decimalAHora(datos.horasOtrosTrabajos) ?? "";
   UI.contenedorTurnosExtra.innerHTML = "";
   (datos.turnosExtra || []).forEach((t) => agregarFilaExtra(t.ent, t.sal));
   actualizarPanelTurnosSuperior(datos);
@@ -360,10 +360,14 @@ function eliminarDia() {
   generarCalendario();
 }
 
-function convertirInputADecimal(valor) {
-    let num = parseFloat(valor) || 0;
-    let horas = Math.floor(num);
-    let minutos = (num - horas) * 100; // Esto extrae el 15 de 2.15
+function convertirStringADecimal(str) {
+    if (!str) return 0;
+    // Esto limpia el valor ("2:15h" o "2:15") y lo divide
+    let partes = str.replace('h', '').trim().split(':');
+    let horas = parseInt(partes[0]) || 0;
+    let minutos = parseInt(partes[1]) || 0;
+    
+    // Convertimos a decimal real (ej: 2:15 -> 2.25)
     return horas + (minutos / 60);
 }
 
