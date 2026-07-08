@@ -404,8 +404,8 @@ function aplicarHorarioManual() {
     }
   });
 
-  let hCond = convertirInputADecimal(UI.manualConduccion.value) || 0;
-  let hOtros = convertirInputADecimal(UI.manualOtrosTrabajos.value) || 0;
+  let hCond = convertirStringADecimal(UI.manualConduccion.value) || 0;
+  let hOtros = convertirStringADecimal(UI.manualOtrosTrabajos.value) || 0;
   let sumaIntroducida = hCond + hOtros;
 
   let diferencia = amplitudTotal - sumaIntroducida;
