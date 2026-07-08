@@ -360,6 +360,13 @@ function eliminarDia() {
   generarCalendario();
 }
 
+function convertirInputADecimal(valor) {
+    let num = parseFloat(valor) || 0;
+    let horas = Math.floor(num);
+    let minutos = (num - horas) * 100; // Esto extrae el 15 de 2.15
+    return horas + (minutos / 60);
+}
+
 // ------------------ Registro de Jornadas Manuales con Validación Estricta (incluye Turnos Partidos) ------------------
 function aplicarHorarioManual() {
   if (!fechaSeleccionadaGlobal) return;
@@ -393,8 +400,8 @@ function aplicarHorarioManual() {
     }
   });
 
-  let hCond = parseFloat(UI.manualConduccion.value) || 0;
-  let hOtros = parseFloat(UI.manualOtrosTrabajos.value) || 0;
+  let hCond = convertirInputADecimal(UI.manualConduccion.value) || 0;
+  let hOtros = convertirInputADecimal(UI.manualOtrosTrabajos.value) || 0;
   let sumaIntroducida = hCond + hOtros;
 
   let diferencia = amplitudTotal - sumaIntroducida;
